@@ -1,223 +1,214 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cyder_store/cores/widgets/bottom_nav_bar.dart';
+import 'bloc/home_bloc.dart';
+import 'bloc/home_event.dart';
+import 'bloc/home_state.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-      ),
-      child: Scaffold(
-        // Background color
-        backgroundColor: Color(0xFFF8F8F8),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16),
-                  // Search bar
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: 'Search products',
-                            prefixIcon: Icon(Icons.search),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(24),
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey[100],
-                            contentPadding: EdgeInsets.zero,
+    return BlocProvider(
+      create: (_) => HomeBloc()..add(LoadHomeData()),
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.light,
+        ),
+        child: Scaffold(
+          // Background color
+          backgroundColor: Color(0xFFF8F8F8),
+          body: SafeArea(
+            child: BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                if (state is HomeLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is HomeError) {
+                  return Center(child: Text(state.message));
+                } else if (state is HomeLoaded) {
+                  final products = state.products;
+                  final categories = state.categories;
+                  return SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 16),
+                          // Search bar
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                    hintText: 'Search products',
+                                    prefixIcon: Icon(Icons.search),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(24),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Icon(Icons.notifications_none, size: 28, color: Colors.grey[700]),
+                            ],
                           ),
-                        ),
+                          const SizedBox(height: 16),
+                          // Delivery address
+                          Row(
+                            children: [
+                              Icon(Icons.location_on_outlined, color: Colors.black),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  'Deliver to  CC Bau Cat 2, phuong 10, quan ...',
+                                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              Icon(Icons.keyboard_arrow_down, color: Colors.grey[700]),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          // New Products title
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'New Products',
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
+                              ),
+                              TextButton(
+                                onPressed: () {},
+                                child: Text('See More', style: TextStyle(color: Colors.blue)),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          // Products List
+                          SizedBox(
+                            height: 300,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: products.length,
+                              separatorBuilder: (context, index) => const SizedBox(width: 12),
+                              itemBuilder: (context, index) {
+                                final p = products[index];
+                                return _ProductCard(
+                                  imageUrl: p.imageUrl,
+                                  name: p.name,
+                                  price: p.price,
+                                  rating: p.rating,
+                                  reviews: p.reviews,
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          // Shop by Categories title
+                          Text(
+                            'Shop by Categories',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                          ),
+                          const SizedBox(height: 16),
+                          // Categories grid
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 20,
+                              crossAxisSpacing: 20,
+                              childAspectRatio: 1.7,
+                            ),
+                            itemCount: categories.length,
+                            itemBuilder: (context, index) {
+                              final c = categories[index];
+                              // Assign colors based on index or label
+                              Color bgColor;
+                              Color iconColor;
+                              switch (c.label) {
+                                case 'Phones':
+                                  bgColor = const Color.fromARGB(102, 199, 196, 196);
+                                  iconColor = Colors.teal;
+                                  break;
+                                case 'Tablets':
+                                  bgColor = Colors.blue[50]!;
+                                  iconColor = Colors.blueAccent;
+                                  break;
+                                case 'Accessories':
+                                  bgColor = Colors.purple[50]!;
+                                  iconColor = Colors.purple;
+                                  break;
+                                case 'Laptops':
+                                  bgColor = Colors.amber[50]!;
+                                  iconColor = Colors.amber[800]!;
+                                  break;
+                                default:
+                                  bgColor = Colors.grey[200]!;
+                                  iconColor = Colors.grey;
+                              }
+                              return _CategoryCard(
+                                icon: _iconFromString(c.icon),
+                                label: c.label,
+                                color: bgColor,
+                                iconColor: iconColor,
+                                height: 90,
+                                onTap: () {
+                                  // TODO: Implement navigation or action for category
+                                  print('${c.label} tapped');
+                                },
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 24),
+                        ],
                       ),
-                      const SizedBox(width: 12),
-                      Icon(Icons.notifications_none, size: 28, color: Colors.grey[700]),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  // Delivery address
-                  Row(
-                    children: [
-                      Icon(Icons.location_on_outlined, color: Colors.black),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          'Deliver to  CC Bau Cat 2, phuong 10, quan ...',
-                          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Icon(Icons.keyboard_arrow_down, color: Colors.grey[700]),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  // New Products title
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'New Products',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text('See More', style: TextStyle(color: Colors.blue)),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  // Products List
-                  SizedBox(
-                    height: 300,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        _ProductCard(
-                          imageUrl: 'https://cdn.viettablet.com/images/detailed/66/samsung-galaxy-s25-edge-111.jpg',
-                          name: 'Samsung Galaxy S25 Edge (12/256GB)',
-                          price: '25.650.600',
-                          rating: 4.9,
-                          reviews: 256,
-                        ),
-                        const SizedBox(width: 12),
-                        _ProductCard(
-                          imageUrl: 'https://cdn.mobilecity.vn/mobilecity-vn/images/2025/05/w300/xiaomi-15s-pro-den-cac-bon.jpg.webp',
-                          name: 'Xiaomi 15S PRO (12/256GB)',
-                          price: '14.550.200',
-                          rating: 4.8,
-                          reviews: 128,
-                        ),
-                        const SizedBox(width: 12),
-                        _ProductCard(
-                          imageUrl: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-2.png',
-                          name: 'Apple iPhone 16 Pro Max (12/256GB)',
-                          price: '32.990.000',
-                          rating: 4.7,
-                          reviews: 300,
-                        ),
-                        const SizedBox(width: 12),
-                        _ProductCard(
-                          imageUrl: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-4_2.png',
-                          name: 'Samsung Galaxy Z Flip6 (12/256GB)',
-                          price: '20.550.200',
-                          rating: 4.0,
-                          reviews: 52,
-                        ),
-                        const SizedBox(width: 12),
-                        _ProductCard(
-                          imageUrl: 'https://thetekcoffee.com/wp-content/uploads/2024/07/galaxy-z-fold6-han-quoc.png',
-                          name: 'Samsung Galaxy Z Fold6 (12/256GB)',
-                          price: '30.550.200',
-                          rating: 4.5,
-                          reviews: 72,
-                        ),
-                        const SizedBox(width: 12),
-                        _ProductCard(
-                          imageUrl: 'https://vcdn1-sohoa.vnecdn.net/2024/09/10/HUAWEI-Mate-XT-rear-finish-102-3717-1695-1725962087.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=9J9OaUNggWV_7bn6ZEn6Ew',
-                          name: 'HUAWEI Mate XT (16/512GB)',
-                          price: '69.990.000',
-                          rating: 4.5,
-                          reviews: 72,
-                        ),
-                        const SizedBox(width: 12),
-                        _ProductCard(
-                          imageUrl: 'https://cdn-v2.didongviet.vn/files/products/2024/8/27/1/1727428395607_cusac57.png',
-                          name: 'U-Green Charger 65W GaN',
-                          price: '650.000',
-                          rating: 4.8,
-                          reviews: 222,
-                        ),
-                      ],
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  // Shop by Categories title
-                  Text(
-                    'Shop by Categories',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                  ),
-                  const SizedBox(height: 16),
-                  // Categories grid
-                  GridView.count(
-                    crossAxisCount: 2,
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    mainAxisSpacing: 20,
-                    crossAxisSpacing: 20,
-                    childAspectRatio: 1.7,
-                    children: [
-                      _CategoryCard(
-                        icon: Icons.outdoor_grill,
-                        label: 'Outdoor',
-                        color: Colors.green[50]!,
-                        iconColor: Colors.green,
-                        height: 90,
-                        onTap: () {
-                          // TODO: Implement navigation or action for Outdoor
-                          print('Outdoor tapped');
-                        },
-                      ),
-                      _CategoryCard(
-                        icon: Icons.kitchen,
-                        label: 'Appliances',
-                        color: Colors.blue[50]!,
-                        iconColor: Colors.blue,
-                        height: 90,
-                        onTap: () {
-                          // TODO: Implement navigation or action for Appliances
-                          print('Appliances tapped');
-                        },
-                      ),
-                      _CategoryCard(
-                        icon: Icons.chair,
-                        label: 'Furniture',
-                        color: Colors.orange[50]!,
-                        iconColor: Colors.orange,
-                        height: 90,
-                        onTap: () {
-                          // TODO: Implement navigation or action for Furniture
-                          print('Furniture tapped');
-                        },
-                      ),
-                      _CategoryCard(
-                        icon: Icons.more_horiz,
-                        label: 'See More',
-                        color: Colors.grey[200]!,
-                        iconColor: Colors.grey,
-                        height: 90,
-                        onTap: () {
-                          // TODO: Implement navigation or action for See More
-                          print('See More tapped');
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                ],
-              ),
+                  );
+                }
+                return Container();
+              },
             ),
           ),
-        ),
-        bottomNavigationBar: BottomNavBar(
-          currentIndex: 0,
-          onTap: (index) {
-            // TODO: Implement navigation logic for other tabs if needed
-          },
+          bottomNavigationBar: BottomNavBar(
+            currentIndex: 0,
+            onTap: (index) {
+              // TODO: Implement navigation logic for other tabs if needed
+            },
+          ),
         ),
       ),
     );
+  }
+}
+
+IconData _iconFromString(String iconName) {
+  switch (iconName) {
+    case 'smartphone':
+      return Icons.smartphone;
+    case 'tablet_mac':
+      return Icons.tablet_mac;
+    case 'headphones':
+      return Icons.headphones;
+    case 'laptop_mac':
+      return Icons.laptop_mac;
+    // ...other cases...
+    default:
+      return Icons.category;
   }
 }
 
