@@ -14,7 +14,8 @@ class HomePage extends StatelessWidget {
         statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
-        backgroundColor: Color(0xFFF8F8F8), // Set a light background color
+        // Background color
+        backgroundColor: Color(0xFFF8F8F8),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -68,7 +69,7 @@ class HomePage extends StatelessWidget {
                     children: [
                       Text(
                         'New Products',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
                       ),
                       TextButton(
                         onPressed: () {},
@@ -85,7 +86,7 @@ class HomePage extends StatelessWidget {
                       children: [
                         _ProductCard(
                           imageUrl: 'https://cdn.viettablet.com/images/detailed/66/samsung-galaxy-s25-edge-111.jpg',
-                          name: 'Samsung Galaxy S25 (12GB/256GB)',
+                          name: 'Samsung Galaxy S25 Edge (12/256GB)',
                           price: '25.650.600',
                           rating: 4.9,
                           reviews: 256,
@@ -93,7 +94,7 @@ class HomePage extends StatelessWidget {
                         const SizedBox(width: 12),
                         _ProductCard(
                           imageUrl: 'https://cdn.mobilecity.vn/mobilecity-vn/images/2025/05/w300/xiaomi-15s-pro-den-cac-bon.jpg.webp',
-                          name: 'Xiaomi 15S PRO (12GB/256GB)',
+                          name: 'Xiaomi 15S PRO (12/256GB)',
                           price: '14.550.200',
                           rating: 4.8,
                           reviews: 128,
@@ -101,10 +102,42 @@ class HomePage extends StatelessWidget {
                         const SizedBox(width: 12),
                         _ProductCard(
                           imageUrl: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-2.png',
-                          name: 'iPhone 16 Pro Max (12GB/256GB)',
+                          name: 'Apple iPhone 16 Pro Max (12/256GB)',
                           price: '32.990.000',
                           rating: 4.7,
                           reviews: 300,
+                        ),
+                        const SizedBox(width: 12),
+                        _ProductCard(
+                          imageUrl: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-4_2.png',
+                          name: 'Samsung Galaxy Z Flip6 (12/256GB)',
+                          price: '20.550.200',
+                          rating: 4.0,
+                          reviews: 52,
+                        ),
+                        const SizedBox(width: 12),
+                        _ProductCard(
+                          imageUrl: 'https://thetekcoffee.com/wp-content/uploads/2024/07/galaxy-z-fold6-han-quoc.png',
+                          name: 'Samsung Galaxy Z Fold6 (12/256GB)',
+                          price: '30.550.200',
+                          rating: 4.5,
+                          reviews: 72,
+                        ),
+                        const SizedBox(width: 12),
+                        _ProductCard(
+                          imageUrl: 'https://vcdn1-sohoa.vnecdn.net/2024/09/10/HUAWEI-Mate-XT-rear-finish-102-3717-1695-1725962087.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=9J9OaUNggWV_7bn6ZEn6Ew',
+                          name: 'HUAWEI Mate XT (16/512GB)',
+                          price: '69.990.000',
+                          rating: 4.5,
+                          reviews: 72,
+                        ),
+                        const SizedBox(width: 12),
+                        _ProductCard(
+                          imageUrl: 'https://cdn-v2.didongviet.vn/files/products/2024/8/27/1/1727428395607_cusac57.png',
+                          name: 'U-Green Charger 65W GaN',
+                          price: '650.000',
+                          rating: 4.8,
+                          reviews: 222,
                         ),
                       ],
                     ),
@@ -121,33 +154,53 @@ class HomePage extends StatelessWidget {
                     crossAxisCount: 2,
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 2.2,
+                    mainAxisSpacing: 20,
+                    crossAxisSpacing: 20,
+                    childAspectRatio: 1.7,
                     children: [
                       _CategoryCard(
                         icon: Icons.outdoor_grill,
                         label: 'Outdoor',
                         color: Colors.green[50]!,
                         iconColor: Colors.green,
+                        height: 90,
+                        onTap: () {
+                          // TODO: Implement navigation or action for Outdoor
+                          print('Outdoor tapped');
+                        },
                       ),
                       _CategoryCard(
                         icon: Icons.kitchen,
                         label: 'Appliances',
                         color: Colors.blue[50]!,
                         iconColor: Colors.blue,
+                        height: 90,
+                        onTap: () {
+                          // TODO: Implement navigation or action for Appliances
+                          print('Appliances tapped');
+                        },
                       ),
                       _CategoryCard(
                         icon: Icons.chair,
                         label: 'Furniture',
                         color: Colors.orange[50]!,
                         iconColor: Colors.orange,
+                        height: 90,
+                        onTap: () {
+                          // TODO: Implement navigation or action for Furniture
+                          print('Furniture tapped');
+                        },
                       ),
                       _CategoryCard(
                         icon: Icons.more_horiz,
                         label: 'See More',
                         color: Colors.grey[200]!,
                         iconColor: Colors.grey,
+                        height: 90,
+                        onTap: () {
+                          // TODO: Implement navigation or action for See More
+                          print('See More tapped');
+                        },
                       ),
                     ],
                   ),
@@ -240,37 +293,101 @@ class _ProductCard extends StatelessWidget {
   }
 }
 
-class _CategoryCard extends StatelessWidget {
+class _CategoryCard extends StatefulWidget {
   final IconData icon;
   final String label;
   final Color color;
   final Color iconColor;
+  final double height;
+  final VoidCallback? onTap;
 
   const _CategoryCard({
     required this.icon,
     required this.label,
     required this.color,
     required this.iconColor,
-  });
+    this.height = 80,
+    this.onTap,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<_CategoryCard> createState() => _CategoryCardState();
+}
+
+class _CategoryCardState extends State<_CategoryCard> with SingleTickerProviderStateMixin {
+  double _scale = 1.0;
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+      lowerBound: 0.95,
+      upperBound: 1.0,
+      value: 1.0,
+    );
+    _controller.addListener(() {
+      setState(() {
+        _scale = _controller.value;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onTapDown(TapDownDetails details) {
+    _controller.reverse();
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    _controller.forward();
+  }
+
+  void _onTapCancel() {
+    _controller.forward();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: iconColor, size: 28),
-            const SizedBox(width: 10),
-            Text(
-              label,
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+    return Material(
+      color: Colors.transparent,
+      child: GestureDetector(
+        onTapDown: _onTapDown,
+        onTapUp: (details) {
+          _onTapUp(details);
+          if (widget.onTap != null) widget.onTap!();
+        },
+        onTapCancel: _onTapCancel,
+        child: AnimatedScale(
+          scale: _scale,
+          duration: const Duration(milliseconds: 100),
+          child: Container(
+            height: widget.height,
+            decoration: BoxDecoration(
+              color: widget.color,
+              borderRadius: BorderRadius.circular(20),
             ),
-          ],
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(widget.icon, color: widget.iconColor, size: 32),
+                  const SizedBox(width: 12),
+                  Text(
+                    widget.label,
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
