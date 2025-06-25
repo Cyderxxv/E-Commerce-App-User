@@ -4,11 +4,20 @@ import '../bloc/profile_bloc.dart';
 import '../bloc/profile_state.dart';
 import '../bloc/profile_event.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
   @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocProvider(
       create: (_) => ProfileBloc()..add(LoadProfileEvent()),
       child: Scaffold(
