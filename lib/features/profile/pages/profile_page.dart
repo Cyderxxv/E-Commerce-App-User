@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/profile_bloc.dart';
 import '../bloc/profile_state.dart';
 import '../bloc/profile_event.dart';
-import '../../../cores/widgets/bottom_nav_bar.dart'; // Adjust the import according to your project structure
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -86,12 +85,6 @@ class ProfilePage extends StatelessWidget {
                 const SizedBox(height: 16),
               ],
             );
-          },
-        ),
-        bottomNavigationBar: BottomNavBar(
-          currentIndex: 2,
-          onTap: (index) {
-            // Optionally handle tab change here if needed
           },
         ),
       ),

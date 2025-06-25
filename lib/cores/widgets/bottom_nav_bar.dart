@@ -12,31 +12,11 @@ class BottomNavBar extends StatelessWidget {
     required this.onTap,
   }) : super(key: key);
 
-  void _onItemTapped(BuildContext context, int index) {
-    if (index == currentIndex) return;
-    switch (index) {
-      case 0:
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomePage()),
-        );
-        break;
-      case 1:
-        Navigator.of(context).pushReplacementNamed('/cart');
-        break;
-      case 2:
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const ProfilePage()),
-        );
-        break;
-    }
-    onTap(index);
-  }
-
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       currentIndex: currentIndex,
-      onTap: (index) => _onItemTapped(context, index),
+      onTap: onTap,
       selectedItemColor: Colors.lightBlue,
       unselectedItemColor: Colors.grey,
       showSelectedLabels: true,

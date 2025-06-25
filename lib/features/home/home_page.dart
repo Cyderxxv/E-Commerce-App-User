@@ -185,12 +185,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           ),
-          bottomNavigationBar: BottomNavBar(
-            currentIndex: 0,
-            onTap: (index) {
-              // TODO: Implement navigation logic for other tabs if needed
-            },
-          ),
+          bottomNavigationBar: null,
         ),
       ),
     );
