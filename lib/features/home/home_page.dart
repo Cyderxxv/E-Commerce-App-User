@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cyder_store/cores/widgets/bottom_nav_bar.dart';
+import '../../cores/widgets/bottom_nav_bar.dart';
 import 'bloc/home_bloc.dart';
 import 'bloc/home_event.dart';
 import 'bloc/home_state.dart';
+import 'widget/product_card_item.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -107,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                               separatorBuilder: (context, index) => const SizedBox(width: 12),
                               itemBuilder: (context, index) {
                                 final p = products[index];
-                                return _ProductCard(
+                                return ProductCardItem(
                                   imageUrl: p.imageUrl,
                                   name: p.name,
                                   price: p.price,
@@ -209,78 +210,6 @@ IconData _iconFromString(String iconName) {
     // ...other cases...
     default:
       return Icons.category;
-  }
-}
-
-class _ProductCard extends StatelessWidget {
-  final String imageUrl;
-  final String name;
-  final String price;
-  final double rating;
-  final int reviews;
-
-  const _ProductCard({
-    required this.imageUrl,
-    required this.name,
-    required this.price,
-    required this.rating,
-    required this.reviews,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 180,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20), // Slightly larger radius
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: Offset(0, 6), // Slightly larger offset
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(14),
-            child: Image.network(
-              imageUrl,
-              height: 110, // Increased height
-              width: double.infinity,
-              fit: BoxFit.contain,
-            ),
-          ),
-          const SizedBox(height: 12), // Increased spacing
-          Text(
-            name,
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17), // Larger font
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '₫$price',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.brown), // Larger font
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Icon(Icons.star, color: Colors.amber, size: 18), // Larger icon
-              const SizedBox(width: 5),
-              Text('$rating', style: TextStyle(fontSize: 15)), // Larger font
-              const SizedBox(width: 5),
-              Text('($reviews)', style: TextStyle(fontSize: 15, color: Colors.grey)), // Larger font
-            ],
-          ),
-        ],
-      ),
-    );
   }
 }
 

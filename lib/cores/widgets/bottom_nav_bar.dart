@@ -1,4 +1,6 @@
+import 'package:cyder_store/features/home/home_page.dart';
 import 'package:flutter/material.dart';
+import '../../features/profile/pages/profile_page.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -10,11 +12,31 @@ class BottomNavBar extends StatelessWidget {
     required this.onTap,
   }) : super(key: key);
 
+  void _onItemTapped(BuildContext context, int index) {
+    if (index == currentIndex) return;
+    switch (index) {
+      case 0:
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomePage()),
+        );
+        break;
+      case 1:
+        Navigator.of(context).pushReplacementNamed('/cart');
+        break;
+      case 2:
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const ProfilePage()),
+        );
+        break;
+    }
+    onTap(index);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       currentIndex: currentIndex,
-      onTap: onTap,
+      onTap: (index) => _onItemTapped(context, index),
       selectedItemColor: Colors.lightBlue,
       unselectedItemColor: Colors.grey,
       showSelectedLabels: true,

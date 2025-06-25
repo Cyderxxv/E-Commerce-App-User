@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
 import '../../../cores/domain/product.dart';
 
 // Category model
 class Category {
-  final String icon; // Store icon name as string for now
+  final String icon;
   final String label;
 
   Category({
