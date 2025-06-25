@@ -35,7 +35,21 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
             child: BlocBuilder<HomeBloc, HomeState>(
               builder: (context, state) {
                 if (state is HomeLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const CircularProgressIndicator(),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('App is still running')),
+                          );
+                        },
+                        child: const Text('App status check'),
+                      ),
+                    ],
+                  );
                 } else if (state is HomeError) {
                   return Center(child: Text(state.message));
                 } else if (state is HomeLoaded) {
