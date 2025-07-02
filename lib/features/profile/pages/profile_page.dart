@@ -4,6 +4,9 @@ import '../bloc/profile_bloc.dart';
 import '../bloc/profile_state.dart';
 import '../bloc/profile_event.dart';
 import '../../history/pages/history_page.dart';
+import '../../auth/bloc/auth_bloc.dart';
+import '../../auth/bloc/auth_event.dart';
+import '../../auth/pages/login_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -103,6 +106,34 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                 Expanded(child: SizedBox()),
                 Text('App version: ${state.appVersion}', style: const TextStyle(color: Colors.grey)),
                 const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      icon: const Icon(Icons.logout),
+                      label: const Text('Logout', style: TextStyle(fontSize: 16)),
+                      onPressed: () {
+                        // Gửi event logout cho AuthBloc
+                        context.read<AuthBloc>().add(LogoutEvent());
+                        // Điều hướng về màn hình đăng nhập và xóa hết các route trước đó
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (_) => const LoginPage()),
+                          (route) => false,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
               ],
             );
           },
