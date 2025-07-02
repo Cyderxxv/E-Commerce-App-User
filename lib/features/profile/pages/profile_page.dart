@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/profile_bloc.dart';
 import '../bloc/profile_state.dart';
 import '../bloc/profile_event.dart';
+import '../../history/pages/history_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -83,7 +84,17 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                   ),
                 ),
                 const SizedBox(height: 8),
-                _ProfileMenuItem(icon: Icons.history, label: 'History', onTap: null),
+                _ProfileMenuItem(
+                  icon: Icons.history,
+                  label: 'History',
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const HistoryPage(),
+                      ),
+                    );
+                  },
+                ),
                 _ProfileMenuItem(icon: Icons.favorite_border, label: 'Wishlist', onTap: null),
                 _ProfileMenuItem(icon: Icons.notifications_none, label: 'Debts', onTap: null),
                 _ProfileMenuItem(icon: Icons.lock_outline, label: 'Security', onTap: null),

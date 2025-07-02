@@ -1,3 +1,4 @@
+import 'package:cyder_store/features/cart/pages/cart_page.dart';
 import 'package:flutter/material.dart';
 import 'features/home/home_page.dart';
 import 'features/profile/pages/profile_page.dart';
@@ -26,7 +27,7 @@ class _MainScreenState extends State<MainScreen> {
         } else {
           DateTime now = DateTime.now();
           if (_lastBackPressed == null ||
-              now.difference(_lastBackPressed!) > Duration(seconds: 2)) {
+              now.difference(_lastBackPressed!) > Duration(seconds: 1)) {
             _lastBackPressed = now;
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Press back again to exit the app')),
@@ -41,7 +42,7 @@ class _MainScreenState extends State<MainScreen> {
           index: _currentIndex,
           children: const [
             HomePage(),
-            Center(child: Text('Cart Page')),
+            CartPage(),
             ProfilePage(),
           ],
         ),

@@ -1,6 +1,5 @@
 import '../../../cores/domain/product.dart';
 
-// Category model
 class Category {
   final String icon;
   final String label;

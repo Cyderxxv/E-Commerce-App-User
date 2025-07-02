@@ -5,6 +5,7 @@ import 'bloc/home_bloc.dart';
 import 'bloc/home_event.dart';
 import 'bloc/home_state.dart';
 import 'widget/product_card_item.dart';
+import '../../cores/widgets/loading_circle.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -38,7 +39,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const CircularProgressIndicator(),
+                      const LoadingCircle(),
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () {

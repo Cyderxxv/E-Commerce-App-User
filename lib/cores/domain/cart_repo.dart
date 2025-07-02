@@ -1,8 +1,8 @@
 import 'product.dart';
 
-class ProductRepository {
-  Future<List<Product>> getProducts() async {
-    await Future.delayed(const Duration(seconds: 5));
+class CartRepository {
+  Future<List<Product>> getCartProducts() async {
+    // await Future.delayed(const Duration(seconds: 10));
     return [
       Product(
         imageUrl: 'https://cdn.viettablet.com/images/detailed/66/samsung-galaxy-s25-edge-111.jpg',
@@ -51,4 +51,6 @@ class ProductRepository {
       ),
     ];
   }
+  
+  
 }

@@ -33,7 +33,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           icon: 'laptop_mac',
           label: 'Laptops',
         ),
-        // Add more categories as needed
       ];
       emit(HomeLoaded(products: products, categories: categories));
     } catch (e) {
