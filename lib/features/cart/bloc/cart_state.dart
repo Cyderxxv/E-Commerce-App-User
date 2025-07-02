@@ -1,4 +1,3 @@
-import 'package:cyder_store/cores/domain/product.dart';
 import 'package:cyder_store/features/cart/models/cart_item.dart';
 
 abstract class CartState {}

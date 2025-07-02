@@ -1,6 +1,4 @@
-import 'package:cyder_store/features/home/home_page.dart';
 import 'package:flutter/material.dart';
-import '../../features/profile/pages/profile_page.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
