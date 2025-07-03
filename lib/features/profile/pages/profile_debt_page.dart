@@ -1,3 +1,4 @@
+import 'package:cyder_store/features/profile/pages/in_debt_product_page.dart';
 import 'package:flutter/material.dart';
 
 class ProfileDebtPage extends StatelessWidget {
@@ -71,7 +72,13 @@ class ProfileDebtPage extends StatelessWidget {
           _DebtMenuItem(
             icon: Icons.receipt_long,
             label: 'View in debt products',
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => InDebtProductPage(),
+                ),
+              );
+            },
           ),
           const SizedBox(height: 8),
           _DebtMenuItem(

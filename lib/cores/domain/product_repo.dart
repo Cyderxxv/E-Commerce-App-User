@@ -10,7 +10,17 @@ class ProductRepository {
         price: '25.650.600',
         rating: 4.9,
         reviews: 256,
-        description: 'Flagship Samsung with stunning display and performance.',
+        description: 'Samsung flagship with curved-edge design and powerful performance.\n'
+'Display: 6.8" Dynamic AMOLED 2X, QHD+, 144Hz\n'
+'CPU: Snapdragon 8 Gen 3\n'
+'RAM: 12GB\n'
+'Storage: 256GB UFS 4.0\n'
+'Rear Camera: 200MP + 50MP (Tele) + 12MP (Ultra-wide)\n'
+'Front Camera: 32MP\n'
+'Battery: 5000mAh, 65W fast charging\n'
+'OS: One UI 7 (Android 15)\n'
+'Water & Dust Resistance: IP68\n'
+'Security: Ultrasonic fingerprint, Face unlock',
         categories: ['Phones'],
       ),
       Product(

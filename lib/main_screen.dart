@@ -1,6 +1,6 @@
 import 'package:cyder_store/features/cart/pages/cart_page.dart';
 import 'package:flutter/material.dart';
-import 'features/home/home_page.dart';
+import 'features/home/pages/home_page.dart';
 import 'features/profile/pages/profile_page.dart';
 import 'cores/widgets/bottom_nav_bar.dart';
 

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'bloc/home_bloc.dart';
-import 'bloc/home_event.dart';
-import 'bloc/home_state.dart';
-import 'widget/product_card_item.dart';
-import '../../cores/widgets/loading_circle.dart';
+import '../bloc/home_bloc.dart';
+import '../bloc/home_event.dart';
+import '../bloc/home_state.dart';
+import '../widget/product_card_item.dart';
+import '../../../cores/widgets/loading_circle.dart';
+import '../pages/product_detail_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -126,12 +127,29 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                               separatorBuilder: (context, index) => const SizedBox(width: 12),
                               itemBuilder: (context, index) {
                                 final p = products[index];
-                                return ProductCardItem(
-                                  imageUrl: p.imageUrl,
-                                  name: p.name,
-                                  price: p.price,
-                                  rating: p.rating,
-                                  reviews: p.reviews,
+                                return GestureDetector(
+                                  behavior: HitTestBehavior.translucent,
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => ProductDetailPage(
+                                          imageUrl: p.imageUrl,
+                                          name: p.name,
+                                          price: p.price,
+                                          description: p.description,
+                                          rating: p.rating,
+                                          ratingCount: p.reviews,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: ProductCardItem(
+                                    imageUrl: p.imageUrl,
+                                    name: p.name,
+                                    price: p.price,
+                                    rating: p.rating,
+                                    reviews: p.reviews,
+                                  ),
                                 );
                               },
                             ),
