@@ -1,3 +1,4 @@
+import 'package:cyder_store/features/cart/pages/cart_confirm_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/cart_bloc.dart';
@@ -165,7 +166,16 @@ class CartPage extends StatelessWidget {
             if (state is CartLoaded && state.cartItems.isNotEmpty) {
               return FloatingActionButton.extended(
                 onPressed: () {
-                  // TODO: Handle Proceed to Checkout
+  final cartBloc = BlocProvider.of<CartBloc>(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BlocProvider.value(
+                        value: cartBloc,
+                        child: const CartConfirmPage(),
+                      ),
+                    ),
+                  );
                 },
                 backgroundColor: Colors.cyan,
                 shape: RoundedRectangleBorder(
