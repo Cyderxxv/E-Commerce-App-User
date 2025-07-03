@@ -7,6 +7,7 @@ import '../../history/pages/history_page.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../../auth/bloc/auth_event.dart';
 import '../../auth/pages/login_page.dart';
+import '../pages/profile_debt_page.dart'; // Import ProfileDebtPage
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -99,7 +100,17 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                   },
                 ),
                 _ProfileMenuItem(icon: Icons.favorite_border, label: 'Wishlist', onTap: null),
-                _ProfileMenuItem(icon: Icons.notifications_none, label: 'Debts', onTap: null),
+                _ProfileMenuItem(
+                  icon: Icons.notifications_none,
+                  label: 'Debts',
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const ProfileDebtPage(),
+                      ),
+                    );
+                  },
+                ),
                 _ProfileMenuItem(icon: Icons.lock_outline, label: 'Security', onTap: null),
                 const SizedBox(height: 16),
                 // Replace Spacer and version text with Expanded for scroll and bottom nav
