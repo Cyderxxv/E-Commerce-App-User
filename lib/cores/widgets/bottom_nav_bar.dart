@@ -49,39 +49,47 @@ class BottomNavBar extends StatelessWidget {
     final bool isSelected = currentIndex == index;
     return GestureDetector(
       onTap: () => onTap(index),
-      child: isSelected
-          ? Container(
-              decoration: BoxDecoration(
-                color: kBlueLight,
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: kBlue, width: 2),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    icon,
-                    color: kBlue,
-                    size: 24,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    label,
-                    style: const TextStyle(
-                      color: kBlue,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : Icon(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
+          color: isSelected ? kBlueLight : Colors.transparent,
+          borderRadius: BorderRadius.circular(30),
+          border: isSelected ? Border.all(color: kBlue, width: 2) : null,
+        ),
+        padding: isSelected 
+            ? const EdgeInsets.symmetric(horizontal: 18, vertical: 8)
+            : const EdgeInsets.all(8),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
               icon,
               color: kBlue,
-              size: 28,
+              size: isSelected ? 24 : 28,
             ),
+            AnimatedOpacity(
+              opacity: isSelected ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 200),
+              child: isSelected
+                  ? Row(
+                      children: [
+                        const SizedBox(width: 8),
+                        Text(
+                          label,
+                          style: const TextStyle(
+                            color: kBlue,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
