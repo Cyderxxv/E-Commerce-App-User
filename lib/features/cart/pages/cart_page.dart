@@ -166,7 +166,7 @@ class CartPage extends StatelessWidget {
             if (state is CartLoaded && state.cartItems.isNotEmpty) {
               return FloatingActionButton.extended(
                 onPressed: () {
-  final cartBloc = BlocProvider.of<CartBloc>(context);
+                  final cartBloc = BlocProvider.of<CartBloc>(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(

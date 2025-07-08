@@ -28,13 +28,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       status: 'active',
       createdAt: DateTime.now(),
     );
-    emit(RegisterState(success: true, message: 'Đăng ký thành công', userModel: user));
+    emit(RegisterState(success: true, userModel: user));
   }
 
   Future<void> _onLogin(LoginEvent event, Emitter<AuthState> emit) async {
     emit(AuthInitial());
     await Future.delayed(const Duration(seconds: 1));
-    // Mock Login Logic
+    // Mock Login
     if (event.data.password == '123456') {
       final user = UserModel(
         userId: '1',
@@ -48,9 +48,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         status: 'active',
         createdAt: DateTime.now(),
       );
-      emit(LoginState(success: true, message: 'Logged in Successfully', userModel: user));
+      emit(LoginState(success: true, userModel: user));
     } else {
-      emit(LoginState(success: false, message: 'Wrong user password', userModel: null));
+      emit(LoginState(success: false, userModel: null));
     }
   }
 
@@ -63,7 +63,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onLogout(LogoutEvent event, Emitter<AuthState> emit) async {
     emit(AuthInitial());
     await Future.delayed(const Duration(milliseconds: 500));
-    emit(LogoutState(success: true, message: 'Logged out successfully'));
+    emit(LogoutState(success: true));
   }
 }
 

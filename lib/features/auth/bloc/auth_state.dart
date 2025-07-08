@@ -13,7 +13,7 @@ class RegisterState extends AuthState {
 
   const RegisterState({
     required this.success,
-    required this.message,
+    this.message,
     this.userModel,
   });
 }
@@ -25,7 +25,7 @@ class LoginState extends AuthState {
 
   const LoginState({
     required this.success,
-    required this.message,
+    this.message,
     this.userModel,
   });
 }
@@ -46,6 +46,6 @@ class LogoutState extends AuthState {
 
   const LogoutState({
     required this.success,
-    required this.message,
+    this.message,
   });
 }
