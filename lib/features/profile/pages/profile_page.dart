@@ -7,7 +7,7 @@ import '../../history/pages/history_page.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../../auth/bloc/auth_event.dart';
 import '../../auth/pages/login_page.dart';
-import '../pages/profile_debt_page.dart'; // Import ProfileDebtPage
+import '../pages/profile_debt_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -133,9 +133,8 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                       icon: const Icon(Icons.logout),
                       label: const Text('Logout', style: TextStyle(fontSize: 16)),
                       onPressed: () {
-                        // Gửi event logout cho AuthBloc
+                        // Logout
                         context.read<AuthBloc>().add(LogoutEvent());
-                        // Điều hướng về màn hình đăng nhập và xóa hết các route trước đó
                         Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(builder: (_) => const LoginPage()),
                           (route) => false,

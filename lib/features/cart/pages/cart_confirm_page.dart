@@ -42,14 +42,14 @@ class _CartConfirmPageState extends State<CartConfirmPage> {
                     // Shipping Address
                     _sectionCard(
                       title: 'Shipping Address',
-                      content: '26, Duong So 2, Thao Dien Ward, An Phu, District 2, Ho Chi Minh city',
+                      content: '268 Khu Pho 2, Phuong Bay Hien, Ho Chi Minh City',
                       onEdit: () {},
                     ),
                     const SizedBox(height: 12),
                     // Contact Info
                     _sectionCard(
                       title: 'Contact Information',
-                      content: '+84932000000\namandamorgan@example.com',
+                      content: '+84975463190\nphamnguyengiakhiem@gmail.com',
                       onEdit: () {},
                     ),
                     const SizedBox(height: 18),

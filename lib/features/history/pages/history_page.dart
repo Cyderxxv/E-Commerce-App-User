@@ -37,7 +37,7 @@ class HistoryPage extends StatelessWidget {
                 separatorBuilder: (_, __) => const SizedBox(height: 12),
                 padding: const EdgeInsets.all(16),
                 itemBuilder: (context, index) {
-                  final item = state.historyList[index];
+                  // final item = state.historyList[index];
                   // Temp data
                   return Container(
                     decoration: BoxDecoration(

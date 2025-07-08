@@ -31,7 +31,6 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
           statusBarBrightness: Brightness.light,
         ),
         child: Scaffold(
-          // Background color
           backgroundColor: Color(0xFFF8F8F8),
           body: SafeArea(
             child: BlocBuilder<HomeBloc, HomeState>(
@@ -238,7 +237,6 @@ IconData _iconFromString(String iconName) {
       return Icons.headphones;
     case 'laptop_mac':
       return Icons.laptop_mac;
-    // ...other cases...
     default:
       return Icons.category;
   }

@@ -10,7 +10,7 @@ abstract class HistoryState extends Equatable {
 class HistoryInitial extends HistoryState {}
 class HistoryLoading extends HistoryState {}
 class HistoryLoaded extends HistoryState {
-  final List<String> historyList; // Thay bằng model thực tế nếu có
+  final List<String> historyList;
   const HistoryLoaded({required this.historyList});
 
   @override
