@@ -1,4 +1,5 @@
 import 'package:cyder_store/features/profile/pages/in_debt_product_page.dart';
+import 'package:cyder_store/features/profile/widgets/debt_notification.dart';
 import 'package:flutter/material.dart';
 
 class ProfileDebtPage extends StatelessWidget {
@@ -6,6 +7,14 @@ class ProfileDebtPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const DebtNotificationDialog(debtAmount: 2000000),
+      );
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8F8),
       appBar: AppBar(
