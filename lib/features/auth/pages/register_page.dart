@@ -5,6 +5,7 @@ import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import '../model/input_register_model.dart';
 import 'login_page.dart';
+import 'otp_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -71,7 +72,11 @@ class _RegisterPageState extends State<RegisterPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message ?? 'Register success')),
               );
-              // TODO: Navigate to login or main screen
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => OtpPage(phoneNumber: _phoneController.text.trim()),
+                ),
+              );
             } else if (state is RegisterState && !state.success) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message ?? 'Register failed')),

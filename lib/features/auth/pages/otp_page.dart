@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../main_screen.dart';
 
 class OtpPage extends StatefulWidget {
   final String phoneNumber;
@@ -25,9 +26,9 @@ class _OtpPageState extends State<OtpPage> {
       );
       return;
     }
-    // TODO: Xử lý xác thực OTP ở đây
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('OTP entered: $otp')),
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const MainScreen()),
+      (route) => false,
     );
   }
 
@@ -48,7 +49,14 @@ class _OtpPageState extends State<OtpPage> {
               ),
               const SizedBox(height: 8),
               Text(
-                'An OTP has been send to number\n(+84)${widget.phoneNumber.substring(widget.phoneNumber.length - 9).padLeft(widget.phoneNumber.length, 'x')}.  Check your phone then enter the provided OTP to below box.',
+                (() {
+                  final phone = widget.phoneNumber;
+                  if (phone.isEmpty || phone.length < 9) {
+                    return 'An OTP has been sent to your phone. Check your phone then enter the provided OTP below.';
+                  }
+                  final masked = '(+84)' + phone.substring(phone.length - 9).padLeft(phone.length, 'x');
+                  return 'An OTP has been send to number\n$masked.  Check your phone then enter the provided OTP to below box.';
+                })(),
                 style: const TextStyle(fontSize: 15, color: Colors.grey),
               ),
               const SizedBox(height: 32),

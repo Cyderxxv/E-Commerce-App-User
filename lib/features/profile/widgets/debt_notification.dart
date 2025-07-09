@@ -83,7 +83,6 @@ class DebtNotificationDialog extends StatelessWidget {
   }
 
   String _formatCurrency(int amount) {
-    // Format tiền Việt Nam: 2.000.000đ
     final str = amount.toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.');
     return '$strđ';
   }
