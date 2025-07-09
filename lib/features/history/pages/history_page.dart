@@ -16,7 +16,13 @@ class HistoryPage extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: const Color(0xFF3DDCFF),
           elevation: 0,
-          title: const Text('Order History', style: TextStyle(color: Colors.white)),
+          title: const Text(
+            'Order History',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.notifications_none, color: Colors.white),

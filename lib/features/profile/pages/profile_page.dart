@@ -30,7 +30,13 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
         appBar: AppBar(
           backgroundColor: const Color(0xFF3DDCFF),
           elevation: 0,
-          title: const Text('My Account', style: TextStyle(color: Colors.white)),
+          title: const Text(
+            'My Account',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.notifications_none, color: Colors.white),
@@ -113,7 +119,6 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                 ),
                 _ProfileMenuItem(icon: Icons.lock_outline, label: 'Security', onTap: null),
                 const SizedBox(height: 16),
-                // Replace Spacer and version text with Expanded for scroll and bottom nav
                 Expanded(child: SizedBox()),
                 Text('App version: ${state.appVersion}', style: const TextStyle(color: Colors.grey)),
                 const SizedBox(height: 16),
@@ -133,7 +138,6 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                       icon: const Icon(Icons.logout),
                       label: const Text('Logout', style: TextStyle(fontSize: 16)),
                       onPressed: () {
-                        // Logout
                         context.read<AuthBloc>().add(LogoutEvent());
                         Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(builder: (_) => const LoginPage()),
