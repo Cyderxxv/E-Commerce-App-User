@@ -8,6 +8,7 @@ import '../../auth/bloc/auth_bloc.dart';
 import '../../auth/bloc/auth_event.dart';
 import '../../auth/pages/login_page.dart';
 import '../pages/profile_debt_page.dart';
+import '../pages/profile_edit_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -81,7 +82,17 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                       ),
                       IconButton(
                         icon: const Icon(Icons.edit, color: Color(0xFF3DDCFF)),
-                        onPressed: () {},
+                        onPressed: () {
+                          final profileBloc = BlocProvider.of<ProfileBloc>(context);
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => BlocProvider.value(
+                                value: profileBloc,
+                                child: const ProfileEditPage(),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),

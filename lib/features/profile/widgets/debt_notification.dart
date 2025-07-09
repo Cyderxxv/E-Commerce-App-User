@@ -57,7 +57,7 @@ class DebtNotificationDialog extends StatelessWidget {
                       ),
                     ),
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Đóng', style: TextStyle(fontSize: 16)),
+                    child: const Text('Close', style: TextStyle(fontSize: 16)),
                   ),
                 ),
               ],
