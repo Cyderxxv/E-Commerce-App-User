@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/cart_bloc.dart';
 import '../bloc/cart_state.dart';
 import '../models/cart_item.dart';
+import 'cart_installment_page.dart';
 
 class CartConfirmPage extends StatefulWidget {
   const CartConfirmPage({Key? key}) : super(key: key);
@@ -116,7 +117,17 @@ class _CartConfirmPageState extends State<CartConfirmPage> {
                             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            if (_paymentMethod == 1) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => CartInstallmentPage(totalAmount: totalWithShipping),
+                                ),
+                              );
+                            } else {
+                              // TODO: Xử lý thanh toán bình thường
+                            }
+                          },
                           child: const Text('Pay', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white)),
                         ),
                       ],
