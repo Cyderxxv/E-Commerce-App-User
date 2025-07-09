@@ -1,4 +1,4 @@
-import 'package:cyder_store/cores/domain/product.dart';
+import 'package:cyder_store/core/domain/product.dart';
 class CartItem {
   final Product product;
   int quantity;

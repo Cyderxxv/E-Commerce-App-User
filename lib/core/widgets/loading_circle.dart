@@ -5,10 +5,10 @@ class LoadingCircle extends StatefulWidget {
   final double size;
   final Color color;
   const LoadingCircle({
-    Key? key,
+    super.key,
     this.size = 48.0,
     this.color = Colors.blue,
-  }) : super(key: key);
+  });
 
   @override
   State<LoadingCircle> createState() => _LoadingCircleState();
@@ -66,7 +66,7 @@ class _LoadingCirclePainter extends CustomPainter {
 
     // Draw background circle (faint)
     final bgPaint = Paint()
-      ..color = color.withOpacity(0.13)
+      ..color = color.withAlpha((255 * 0.13).round())
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth;
     canvas.drawCircle(center, radius, bgPaint);

@@ -2,10 +2,10 @@ import 'package:cyder_store/features/cart/pages/cart_page.dart';
 import 'package:flutter/material.dart';
 import 'features/home/pages/home_page.dart';
 import 'features/profile/pages/profile_page.dart';
-import 'cores/widgets/bottom_nav_bar.dart';
+import 'core/widgets/bottom_nav_bar.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  const MainScreen({super.key});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -17,24 +17,27 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          return;
+        }
         if (_currentIndex != 0) {
           setState(() {
             _currentIndex = 0;
           });
-          return false;
         } else {
           DateTime now = DateTime.now();
           if (_lastBackPressed == null ||
-              now.difference(_lastBackPressed!) > Duration(seconds: 1)) {
+              now.difference(_lastBackPressed!) > const Duration(seconds: 1)) {
             _lastBackPressed = now;
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Press back again to exit the app')),
             );
-            return false;
+          } else {
+            Navigator.of(context).pop();
           }
-          return true;
         }
       },
       child: Scaffold(

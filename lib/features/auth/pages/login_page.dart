@@ -1,16 +1,16 @@
+import 'package:cyder_store/features/auth/models/input_login_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
-import '../model/input_login_model.dart';
 import '../../../main_screen.dart';
 import 'forgot_password_page.dart';
 import 'register_page.dart';
 import 'dart:math' as math;
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -77,7 +77,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             if (state is LoginState && state.success) {
               // Navigate to main screen
               Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => MainScreen()),
+                MaterialPageRoute(builder: (_) => const MainScreen()),
                 (route) => false,
               );
             } else if (state is LoginState && !state.success) {

@@ -1,6 +1,8 @@
-import '../model/input_login_model.dart';
-import '../model/input_register_model.dart';
-import '../model/input_forgot_password_model.dart';
+
+
+import '../models/input_forgot_password_model.dart';
+import '../models/input_login_model.dart';
+import '../models/input_register_model.dart';
 
 sealed class AuthEvent {
   const AuthEvent();

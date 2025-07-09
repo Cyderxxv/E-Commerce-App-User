@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/domain/product_repo.dart';
 import 'home_event.dart';
 import 'home_state.dart';
-import '../../../cores/domain/product_repo.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final ProductRepository _productRepository = ProductRepository();

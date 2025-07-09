@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import '../../../cores/domain/product.dart';
+
+import '../../../core/domain/product.dart';
 
 class InDebtProductPage extends StatelessWidget {
   final List<InDebtProduct> inDebtProducts;

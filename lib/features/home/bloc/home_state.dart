@@ -1,4 +1,4 @@
-import '../../../cores/domain/product.dart';
+import '../../../core/domain/product.dart';
 
 class Category {
   final String icon;

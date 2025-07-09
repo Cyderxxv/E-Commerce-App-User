@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
-import '../model/input_register_model.dart';
+import '../models/input_register_model.dart';
 import 'login_page.dart';
 import 'otp_page.dart';
 
