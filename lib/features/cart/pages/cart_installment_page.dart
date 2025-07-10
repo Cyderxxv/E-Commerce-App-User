@@ -55,7 +55,7 @@ class _CartInstallmentPageState extends State<CartInstallmentPage> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: () {
-                  // TODO: Xử lý tiếp tục trả góp
+                  // TODO: installment period logic
                 },
                 child: const Text('Continue', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white)),
               ),

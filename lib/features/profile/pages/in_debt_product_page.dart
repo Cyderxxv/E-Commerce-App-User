@@ -62,7 +62,7 @@ class InDebtProductPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Tổng quan biểu đồ với Doughnut Chart
+          // Chart showing debt payment progress
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
