@@ -1,6 +1,17 @@
-import 'product.dart';
+import '../../../core/domain/product.dart';
 
-class ProductRepository {
+class Category {
+  final String icon;
+  final String label;
+
+  Category({
+    required this.icon,
+    required this.label,
+  });
+}
+
+class HomeRepository {
+  /// Get products for home page
   Future<List<Product>> getProducts() async {
     await Future.delayed(const Duration(seconds: 5));
     return [
@@ -38,7 +49,7 @@ class ProductRepository {
         price: '32.990.000',
         rating: 4.7,
         reviews: 300,
-        description: 'Apple’s latest flagship with advanced camera.',
+        description: 'Apple\'s latest flagship with advanced camera.',
         categories: ['Phones'],
       ),
       Product(
@@ -61,4 +72,49 @@ class ProductRepository {
       ),
     ];
   }
+
+  /// Get categories for home page
+  Future<List<Category>> getCategories() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return [
+      Category(
+        icon: 'smartphone',
+        label: 'Phones',
+      ),
+      Category(
+        icon: 'tablet_mac',
+        label: 'Tablets',
+      ),
+      Category(
+        icon: 'headphones',
+        label: 'Accessories',
+      ),
+      Category(
+        icon: 'laptop_mac',
+        label: 'Laptops',
+      ),
+    ];
+  }
+
+  /// Get home data (products + categories)
+  Future<HomeData> getHomeData() async {
+    final products = await getProducts();
+    final categories = await getCategories();
+    
+    return HomeData(
+      products: products,
+      categories: categories,
+    );
+  }
+}
+
+/// Result class for home data
+class HomeData {
+  final List<Product> products;
+  final List<Category> categories;
+
+  HomeData({
+    required this.products,
+    required this.categories,
+  });
 }

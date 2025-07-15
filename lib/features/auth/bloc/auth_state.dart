@@ -6,24 +6,24 @@ class AuthState{
 
 class AuthInitial extends AuthState {}
 
-class RegisterState extends AuthState {
-  final bool success;
-  final String? message;
-  final UserModel? userModel;
-
-  const RegisterState({
-    required this.success,
-    this.message,
-    this.userModel,
-  });
-}
-
 class LoginState extends AuthState {
   final bool success;
   final String? message;
   final UserModel? userModel;
 
   const LoginState({
+    required this.success,
+    this.message,
+    this.userModel,
+  });
+}
+
+class RegisterState extends AuthState {
+  final bool success;
+  final String? message;
+  final UserModel? userModel;
+
+  const RegisterState({
     required this.success,
     this.message,
     this.userModel,

@@ -9,6 +9,7 @@ import '../../auth/bloc/auth_event.dart';
 import '../../auth/pages/login_page.dart';
 import '../pages/profile_debt_page.dart';
 import '../pages/profile_edit_page.dart';
+import '../../wishlist/pages/wishlist_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -116,7 +117,17 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                     );
                   },
                 ),
-                _ProfileMenuItem(icon: Icons.favorite_border, label: 'Wishlist', onTap: null),
+                _ProfileMenuItem(
+                  icon: Icons.favorite_border, 
+                  label: 'Wishlist', 
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const WishlistPage(),
+                      ),
+                    );
+                  }
+                ),
                 _ProfileMenuItem(
                   icon: Icons.notifications_none,
                   label: 'Debts',

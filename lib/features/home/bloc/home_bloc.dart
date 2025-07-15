@@ -1,11 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/domain/product_repo.dart';
+import '../domain/home_repo.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  final ProductRepository _productRepository = ProductRepository();
-  HomeBloc() : super(HomeInitial()) {
+  final HomeRepository _homeRepository;
+
+  HomeBloc({HomeRepository? homeRepository})
+      : _homeRepository = homeRepository ?? HomeRepository(),
+        super(HomeInitial()) {
     on<LoadHomeData>(_onLoadHomeData);
   }
 
@@ -15,26 +18,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   ) async {
     emit(HomeLoading());
     try {
-      final products = await _productRepository.getProducts();
-      final categories = [
-        Category(
-          icon: 'smartphone',
-          label: 'Phones',
-        ),
-        Category(
-          icon: 'tablet_mac',
-          label: 'Tablets',
-        ),
-        Category(
-          icon: 'headphones',
-          label: 'Accessories',
-        ),
-        Category(
-          icon: 'laptop_mac',
-          label: 'Laptops',
-        ),
-      ];
-      emit(HomeLoaded(products: products, categories: categories));
+      final homeData = await _homeRepository.getHomeData();
+      emit(HomeLoaded(
+        products: homeData.products,
+        categories: homeData.categories,
+      ));
     } catch (e) {
       emit(HomeError(message: 'Failed to load data'));
     }

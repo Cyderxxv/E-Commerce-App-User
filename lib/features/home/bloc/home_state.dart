@@ -1,14 +1,5 @@
 import '../../../core/domain/product.dart';
-
-class Category {
-  final String icon;
-  final String label;
-
-  Category({
-    required this.icon,
-    required this.label,
-  });
-}
+import '../domain/home_repo.dart';
 
 abstract class HomeState {}
 

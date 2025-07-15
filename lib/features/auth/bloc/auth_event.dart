@@ -6,16 +6,16 @@ sealed class AuthEvent {
   const AuthEvent();
 }
 
-final class RegisterEvent extends AuthEvent {
-  final InputRegisterModel data;
-
-  const RegisterEvent({required this.data});
-}
-
 final class LoginEvent extends AuthEvent {
   final InputLoginModel data;
 
   const LoginEvent({required this.data});
+}
+
+final class RegisterEvent extends AuthEvent {
+  final InputRegisterModel data;
+
+  const RegisterEvent({required this.data});
 }
 
 final class ForgotPasswordEvent extends AuthEvent {
