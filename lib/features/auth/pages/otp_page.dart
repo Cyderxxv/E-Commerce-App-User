@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../main_screen.dart';
+import '../../../core/services/auth_service.dart';
 
 class OtpPage extends StatefulWidget {
   final String phoneNumber;
@@ -26,6 +27,8 @@ class _OtpPageState extends State<OtpPage> {
       );
       return;
     }
+    // Set login state after successful OTP verification
+    AuthService().login();
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const MainScreen()),
       (route) => false,

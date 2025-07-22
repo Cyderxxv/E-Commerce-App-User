@@ -6,7 +6,7 @@ import '../bloc/profile_event.dart';
 import '../../history/pages/history_page.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../../auth/bloc/auth_event.dart';
-import '../../auth/pages/login_page.dart';
+import '../../../core/services/auth_service.dart';
 import '../pages/profile_debt_page.dart';
 import '../pages/profile_edit_page.dart';
 import '../../wishlist/pages/wishlist_page.dart';
@@ -160,11 +160,10 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                       icon: const Icon(Icons.logout),
                       label: const Text('Logout', style: TextStyle(fontSize: 16)),
                       onPressed: () {
+                        // Logout from AuthService
+                        AuthService().logout();
                         context.read<AuthBloc>().add(LogoutEvent());
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (_) => const LoginPage()),
-                          (route) => false,
-                        );
+                        // Don't navigate, just let the ProfileWrapper handle the state change
                       },
                     ),
                   ),

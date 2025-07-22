@@ -22,7 +22,7 @@ class AuthRepository {
   Future<AuthResult> login(InputLoginModel loginData) async {
     await Future.delayed(const Duration(seconds: 1));
     
-    // Mock login validation
+    // Mock login validation  
     if (loginData.password == '123456') {
       return AuthResult(
         success: true,

@@ -5,6 +5,7 @@ import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import '../../../main_screen.dart';
+import '../../../core/services/auth_service.dart';
 import 'forgot_password_page.dart';
 import 'register_page.dart';
 import 'dart:math' as math;
@@ -75,6 +76,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is LoginState && state.success) {
+              // Set login state in AuthService
+              AuthService().login();
               // Navigate to main screen
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (_) => const MainScreen()),

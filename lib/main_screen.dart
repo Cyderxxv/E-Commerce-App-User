@@ -1,8 +1,9 @@
-import 'package:cyder_store/features/cart/pages/cart_page.dart';
+import 'package:cyder_store/features/cart/pages/cart_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'features/home/pages/home_page.dart';
-import 'features/profile/pages/profile_page.dart';
+import 'features/profile/pages/profile_wrapper.dart';
 import 'core/widgets/bottom_nav_bar.dart';
+import 'core/services/auth_service.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -43,18 +44,24 @@ class _MainScreenState extends State<MainScreen> {
       child: Scaffold(
         body: IndexedStack(
           index: _currentIndex,
-          children: const [
+          children: [
             HomePage(),
-            CartPage(),
-            ProfilePage(),
+            CartWrapper(),
+            ProfileWrapper(),
           ],
         ),
-        bottomNavigationBar: BottomNavBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
+        bottomNavigationBar: ListenableBuilder(
+          listenable: AuthService(),
+          builder: (context, child) {
+            return BottomNavBar(
+              currentIndex: _currentIndex,
+              cartCount: AuthService().isLoggedIn ? 0 : 0, // Will be updated with actual cart count when needed
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+            );
           },
         ),
       ),
