@@ -4,6 +4,8 @@ import '../models/input_register_model.dart';
 import '../models/input_forgot_password_model.dart';
 
 class AuthRepository {
+  static bool _isLoggedIn = false;
+  
   // Mock userdata
   static final UserModel _mockUser = UserModel(
     userId: 'user_001',
@@ -24,6 +26,7 @@ class AuthRepository {
     
     // Mock login validation  
     if (loginData.password == '123456') {
+      _isLoggedIn = true;
       return AuthResult(
         success: true,
         user: _mockUser,
@@ -75,11 +78,17 @@ class AuthRepository {
   Future<AuthResult> logout() async {
     await Future.delayed(const Duration(milliseconds: 500));
     
+    _isLoggedIn = false;
     return AuthResult(
       success: true,
       user: null,
       message: 'Logout successful',
     );
+  }
+
+  /// Check if user is logged in
+  bool isLoggedIn() {
+    return _isLoggedIn;
   }
 
   /// Verify OTP code
@@ -105,7 +114,12 @@ class AuthRepository {
   /// Get current user profile
   Future<UserModel?> getCurrentUser() async {
     await Future.delayed(const Duration(milliseconds: 300));
-    return _mockUser;
+    return _isLoggedIn ? _mockUser : null;
+  }
+
+  /// Get current user synchronously for BLoC
+  UserModel? getCurrentUserSync() {
+    return _isLoggedIn ? _mockUser : null;
   }
 }
 

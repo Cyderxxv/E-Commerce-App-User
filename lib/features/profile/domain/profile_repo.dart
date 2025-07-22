@@ -3,7 +3,7 @@ class ProfileRepository {
   ProfileData _currentProfile = ProfileData(
     name: 'Khiem Pham',
     email: 'phamnguyengiakhiem@gmail.com',
-    avatarUrl: 'https://i.pravatar.cc/150?img=3',
+    avatarUrl: 'https://scontent.fsgn2-5.fna.fbcdn.net/v/t39.30808-6/500419032_1790214701525237_1171719718902869541_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeGA1yB7EhuuafrnRe8OChDkPkllL8YccZM-SWUvxhxxk__LGF1R_6Dt4De2MSFkv3vshLeZsKiTYtvovNwO07vm&_nc_ohc=g1TEkLwbnv4Q7kNvwHCJQFF&_nc_oc=Admuc3YCQvXtVP2DMRY_bIdwPhfFHIrqxWcIJjACy6372R1TKGMPulHSgM_pHp7tFrs&_nc_zt=23&_nc_ht=scontent.fsgn2-5.fna&_nc_gid=SSKNowL7lPEVWPnW9Gl54w&oh=00_AfT8VsxY6t0UyCHSeTHO8kjUUdgXQtICqnBbUQCQkGeiPw&oe=6884DABE',
     appVersion: '0.1.1',
   );
 

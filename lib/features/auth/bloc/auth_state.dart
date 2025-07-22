@@ -6,6 +6,14 @@ class AuthState{
 
 class AuthInitial extends AuthState {}
 
+class AuthAuthenticated extends AuthState {
+  final UserModel user;
+  
+  const AuthAuthenticated({required this.user});
+}
+
+class AuthUnauthenticated extends AuthState {}
+
 class LoginState extends AuthState {
   final bool success;
   final String? message;

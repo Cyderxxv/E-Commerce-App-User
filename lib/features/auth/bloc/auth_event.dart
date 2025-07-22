@@ -6,6 +6,10 @@ sealed class AuthEvent {
   const AuthEvent();
 }
 
+final class CheckAuthEvent extends AuthEvent {
+  const CheckAuthEvent();
+}
+
 final class LoginEvent extends AuthEvent {
   final InputLoginModel data;
 

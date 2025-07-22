@@ -1,9 +1,12 @@
 import 'package:cyder_store/features/cart/pages/cart_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/home/pages/home_page.dart';
 import 'features/profile/pages/profile_wrapper.dart';
+import 'features/auth/bloc/auth_bloc.dart';
+import 'features/auth/bloc/auth_event.dart';
+import 'features/auth/bloc/auth_state.dart';
 import 'core/widgets/bottom_nav_bar.dart';
-import 'core/services/auth_service.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -15,6 +18,13 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
   DateTime? _lastBackPressed;
+
+  @override
+  void initState() {
+    super.initState();
+    // Check authentication status when MainScreen initializes
+    context.read<AuthBloc>().add(const CheckAuthEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,12 +60,13 @@ class _MainScreenState extends State<MainScreen> {
             ProfileWrapper(),
           ],
         ),
-        bottomNavigationBar: ListenableBuilder(
-          listenable: AuthService(),
-          builder: (context, child) {
+        bottomNavigationBar: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            final isLoggedIn = state is AuthAuthenticated;
             return BottomNavBar(
               currentIndex: _currentIndex,
-              cartCount: AuthService().isLoggedIn ? 0 : 0, // Will be updated with actual cart count when needed
+              cartCount: isLoggedIn ? 0 : 0, // Will be updated with actual cart count when needed
+              isLoggedIn: isLoggedIn,
               onTap: (index) {
                 setState(() {
                   _currentIndex = index;

@@ -9,11 +9,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc({AuthRepository? authRepository})
       : _authRepository = authRepository ?? AuthRepository(),
-        super(AuthInitial()) {
+        super(AuthUnauthenticated()) {
+    on<CheckAuthEvent>(_onCheckAuth);
     on<RegisterEvent>(_onRegister);
     on<LoginEvent>(_onLogin);
     on<ForgotPasswordEvent>(_onForgotPassword);
     on<LogoutEvent>(_onLogout);
+  }
+
+  Future<void> _onCheckAuth(CheckAuthEvent event, Emitter<AuthState> emit) async {
+    // Check if user is already logged in from storage or service
+    final isLoggedIn = _authRepository.isLoggedIn();
+    if (isLoggedIn) {
+      final user = _authRepository.getCurrentUserSync();
+      if (user != null) {
+        emit(AuthAuthenticated(user: user));
+      } else {
+        emit(AuthUnauthenticated());
+      }
+    } else {
+      emit(AuthUnauthenticated());
+    }
   }
 
   Future<void> _onLogin(LoginEvent event, Emitter<AuthState> emit) async {
@@ -28,12 +44,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           userModel: result.user,
           message: result.message,
         ));
+        // After successful login, emit authenticated state
+        if (result.user != null) {
+          emit(AuthAuthenticated(user: result.user!));
+        }
       } else {
         emit(LoginState(
           success: false,
           userModel: null,
           message: result.message,
         ));
+        emit(AuthUnauthenticated());
       }
     } catch (e) {
       emit(LoginState(
@@ -41,6 +62,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         userModel: null,
         message: 'An error occurred during login',
       ));
+      emit(AuthUnauthenticated());
     }
   }
 
@@ -100,6 +122,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         success: result.success,
         message: result.message,
       ));
+      
+      // After logout, emit unauthenticated state
+      emit(AuthUnauthenticated());
     } catch (e) {
       emit(LogoutState(
         success: false,

@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../services/auth_service.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
   final int cartCount;
+  final bool isLoggedIn;
 
   const BottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
     this.cartCount = 0,
+    this.isLoggedIn = false,
   });
 
   static const Color kBlue = Color(0xFF3DDCFC);
@@ -89,7 +90,7 @@ class BottomNavBar extends StatelessWidget {
                   ),
                 ),
                 // Cart count badge for cart item (index 1)
-                if (index == 1 && cartCount > 0 && AuthService().isLoggedIn)
+                if (index == 1 && cartCount > 0 && isLoggedIn)
                   Positioned(
                     right: 0,
                     top: 0,
