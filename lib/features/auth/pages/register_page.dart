@@ -4,7 +4,6 @@ import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import '../models/input_register_model.dart';
-import '../../../core/services/auth_service.dart';
 import '../../../main_screen.dart';
 import 'login_page.dart';
 import 'otp_page.dart';

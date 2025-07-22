@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/auth/bloc/auth_bloc.dart';
+import 'features/profile/bloc/profile_bloc.dart';
 import 'features/splash/splash.dart';
 
 void main() {
@@ -12,8 +13,15 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AuthBloc>(
-      create: (_) => AuthBloc(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(
+          create: (_) => AuthBloc(),
+        ),
+        BlocProvider<ProfileBloc>(
+          create: (_) => ProfileBloc(),
+        ),
+      ],
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
         home: SplashScreen(),

@@ -6,6 +6,7 @@ import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
 import '../pages/product_detail_page.dart';
+import '../pages/category_products_page.dart';
 import '../widgets/product_card_item.dart';
 
 class HomePage extends StatefulWidget {
@@ -195,6 +196,10 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                                   bgColor = Colors.amber[50]!;
                                   iconColor = Colors.amber[800]!;
                                   break;
+                                case 'Smart Watches':
+                                  bgColor = Colors.green[50]!;
+                                  iconColor = Colors.green[700]!;
+                                  break;
                                 default:
                                   bgColor = Colors.grey[200]!;
                                   iconColor = Colors.grey;
@@ -206,8 +211,13 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                                 iconColor: iconColor,
                                 height: 90,
                                 onTap: () {
-                                  // TODO: Implement navigation or action for category
-                                  print('${c.label} tapped');
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => CategoryProductsPage(
+                                        categoryName: c.label,
+                                      ),
+                                    ),
+                                  );
                                 },
                               );
                             },
@@ -239,6 +249,8 @@ IconData _iconFromString(String iconName) {
       return Icons.headphones;
     case 'laptop_mac':
       return Icons.laptop_mac;
+    case 'watch':
+      return Icons.watch;
     default:
       return Icons.category;
   }

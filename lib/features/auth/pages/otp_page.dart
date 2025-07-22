@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/auth_bloc.dart';
+import '../bloc/auth_event.dart';
+import '../bloc/auth_state.dart';
+import '../models/input_login_model.dart';
 import '../../../main_screen.dart';
-import '../../../core/services/auth_service.dart';
 
 class OtpPage extends StatefulWidget {
   final String phoneNumber;
@@ -27,12 +31,14 @@ class _OtpPageState extends State<OtpPage> {
       );
       return;
     }
-    // Set login state after successful OTP verification
-    AuthService().login();
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const MainScreen()),
-      (route) => false,
-    );
+    
+    // After successful OTP verification, perform mock login to set authenticated state
+    context.read<AuthBloc>().add(LoginEvent(
+      data: InputLoginModel(
+        phoneNumber: widget.phoneNumber,
+        password: '123456', // Mock password for OTP verification
+      ),
+    ));
   }
 
   @override
@@ -40,60 +46,74 @@ class _OtpPageState extends State<OtpPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 16),
-              const Text(
-                'One-time Password',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                (() {
-                  final phone = widget.phoneNumber;
-                  if (phone.isEmpty || phone.length < 9) {
-                    return 'An OTP has been sent to your phone. Check your phone then enter the provided OTP below.';
-                  }
-                  final masked = '(+84)' + phone.substring(phone.length - 9).padLeft(phone.length, 'x');
-                  return 'An OTP has been send to number\n$masked.  Check your phone then enter the provided OTP to below box.';
-                })(),
-                style: const TextStyle(fontSize: 15, color: Colors.grey),
-              ),
-              const SizedBox(height: 32),
-              TextField(
-                controller: _otpController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: '123456',
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
+        child: BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is LoginState && state.success) {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const MainScreen()),
+                (route) => false,
+              );
+            } else if (state is LoginState && !state.success) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('OTP verification failed')),
+              );
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                const Text(
+                  'One-time Password',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF4DD0EE),
-                    foregroundColor: Colors.white,
-                    textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
+                const SizedBox(height: 8),
+                Text(
+                  (() {
+                    final phone = widget.phoneNumber;
+                    if (phone.isEmpty || phone.length < 9) {
+                      return 'An OTP has been sent to your phone. Check your phone then enter the provided OTP below.';
+                    }
+                    final masked = '(+84)' + phone.substring(phone.length - 9).padLeft(phone.length, 'x');
+                    return 'An OTP has been send to number\n$masked.  Check your phone then enter the provided OTP to below box.';
+                  })(),
+                  style: const TextStyle(fontSize: 15, color: Colors.grey),
+                ),
+                const SizedBox(height: 32),
+                TextField(
+                  controller: _otpController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: '123456',
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
-                  onPressed: _onProceed,
-                  child: const Text('Proceed'),
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4DD0EE),
+                      foregroundColor: Colors.white,
+                      textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                    onPressed: _onProceed,
+                    child: const Text('Proceed'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

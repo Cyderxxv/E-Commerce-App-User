@@ -6,7 +6,6 @@ import '../bloc/profile_event.dart';
 import '../../history/pages/history_page.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../../auth/bloc/auth_event.dart';
-import '../../../core/services/auth_service.dart';
 import '../pages/profile_debt_page.dart';
 import '../pages/profile_edit_page.dart';
 import '../../wishlist/pages/wishlist_page.dart';
@@ -23,12 +22,18 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
   bool get wantKeepAlive => true;
 
   @override
+  void initState() {
+    super.initState();
+    // Load profile data when page initializes
+    context.read<ProfileBloc>().add(LoadProfileEvent());
+  }
+
+  @override
   Widget build(BuildContext context) {
     super.build(context);
-    return BlocProvider(
-      create: (_) => ProfileBloc()..add(LoadProfileEvent()),
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF8F8F8),
+    
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8F8F8),
         appBar: AppBar(
           backgroundColor: const Color(0xFF3DDCFF),
           elevation: 0,
@@ -48,9 +53,64 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
         ),
         body: BlocBuilder<ProfileBloc, ProfileState>(
           builder: (context, state) {
-            return Column(
-              children: [
-                Container(
+            if (state is ProfileLoading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (state is ProfileError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, size: 64, color: Colors.red),
+                    SizedBox(height: 16),
+                    Text(
+                      'Error: ${state.message}',
+                      style: TextStyle(color: Colors.red),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => context.read<ProfileBloc>().add(LoadProfileEvent()),
+                      child: Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            } else if (state is ProfileLoaded || state is ProfileUpdateSuccess) {
+              final String name;
+              final String email;
+              final String avatarUrl;
+              final String appVersion;
+              
+              if (state is ProfileLoaded) {
+                name = state.name;
+                email = state.email;
+                avatarUrl = state.avatarUrl;
+                appVersion = state.appVersion;
+              } else {
+                final successState = state as ProfileUpdateSuccess;
+                name = successState.name;
+                email = successState.email;
+                avatarUrl = successState.avatarUrl;
+                appVersion = successState.appVersion;
+              }
+              
+              return _buildProfileContent(name, email, avatarUrl, appVersion);
+            } else {
+              return const Center(
+                child: Text('No profile data available'),
+              );
+            }
+          },
+        ),
+      );
+  }
+
+  Widget _buildProfileContent(String name, String email, String avatarUrl, String appVersion) {
+    return Column(
+      children: [
+        Container(
                   margin: const EdgeInsets.all(16),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -68,16 +128,16 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                     children: [
                       CircleAvatar(
                         radius: 28,
-                        backgroundImage: NetworkImage(state.avatarUrl),
+                        backgroundImage: NetworkImage(avatarUrl),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(state.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 4),
-                            Text(state.email, style: const TextStyle(color: Colors.grey)),
+                            Text(email, style: const TextStyle(color: Colors.grey)),
                           ],
                         ),
                       ),
@@ -142,7 +202,7 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                 _ProfileMenuItem(icon: Icons.lock_outline, label: 'Security', onTap: null),
                 const SizedBox(height: 16),
                 Expanded(child: SizedBox()),
-                Text('App version: ${state.appVersion}', style: const TextStyle(color: Colors.grey)),
+                Text('App version: $appVersion', style: const TextStyle(color: Colors.grey)),
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -160,9 +220,8 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                       icon: const Icon(Icons.logout),
                       label: const Text('Logout', style: TextStyle(fontSize: 16)),
                       onPressed: () {
-                        // Logout from AuthService
-                        AuthService().logout();
-                        context.read<AuthBloc>().add(LogoutEvent());
+                        // Logout using BLoC
+                        context.read<AuthBloc>().add(const LogoutEvent());
                         // Don't navigate, just let the ProfileWrapper handle the state change
                       },
                     ),
@@ -171,10 +230,6 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                 const SizedBox(height: 24),
               ],
             );
-          },
-        ),
-      ),
-    );
   }
 }
 
