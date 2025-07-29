@@ -4,7 +4,6 @@ import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import '../models/input_register_model.dart';
-import '../../../main_screen.dart';
 import 'login_page.dart';
 import 'otp_page.dart';
 
@@ -239,7 +238,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: state is AuthInitial ? _onRegisterPressed : null,
+                      onPressed: _onRegisterPressed,
                       child: const Text('Create Account', style: TextStyle(fontSize: 18)),
                     ),
                   ),

@@ -24,7 +24,7 @@ class HomeRepository {
         reviews: 256,
         description: 'Samsung flagship with curved-edge design and powerful performance.\n'
                       'Display: 6.8" Dynamic AMOLED 2X, QHD+, 144Hz\n'
-                      'CPU: Snapdragon 8 Gen 3\n'
+                      'CPU: Snapdragon 8 Elite for Galaxy \n'
                       'RAM: 12GB\n'
                       'Storage: 256GB UFS 4.0\n'
                       'Rear Camera: 200MP + 50MP (Tele) + 12MP (Ultra-wide)\n'
