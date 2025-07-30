@@ -90,36 +90,70 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                           ),
                           const SizedBox(height: 16),
                           // Delivery address
-                          Row(
-                            children: [
-                              Icon(Icons.location_on_outlined, color: Colors.black),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  'Deliver to  CC Bau Cat 2, phuong 10, quan ...',
-                                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
-                                  overflow: TextOverflow.ellipsis,
+                          Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(Icons.location_on_outlined, color: Colors.black, size: 20),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    'Deliver to  CC Bau Cat 2, phuong 10, quan ...',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500, 
+                                      fontSize: 15,
+                                      height: 1.3,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
                                 ),
-                              ),
-                              Icon(Icons.keyboard_arrow_down, color: Colors.grey[700]),
-                            ],
+                                Icon(Icons.keyboard_arrow_down, color: Colors.grey[700], size: 20),
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 24),
                           // New Products title
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(
-                                'New Products',
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
+                              Expanded(
+                                child: Text(
+                                  'New Products',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold, 
+                                    fontSize: 26,
+                                    height: 1.2,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
                               ),
-                              TextButton(
-                                onPressed: () {},
-                                child: Text('See More', style: TextStyle(color: Colors.blue)),
+                              SizedBox(
+                                height: 36,
+                                child: TextButton(
+                                  onPressed: () {},
+                                  style: TextButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  child: Text(
+                                    'See More', 
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.0,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 12),
                           // Products List
                           SizedBox(
                             height: 300,
@@ -137,10 +171,10 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                                         builder: (_) => ProductDetailPage(
                                           imageUrl: p.imageUrl,
                                           name: p.name,
-                                          price: p.price,
+                                          price: p.price.toStringAsFixed(0),
                                           description: p.description,
                                           rating: p.rating,
-                                          ratingCount: p.reviews,
+                                          ratingCount: p.reviewCount,
                                         ),
                                       ),
                                     );
@@ -148,9 +182,9 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                                   child: ProductCardItem(
                                     imageUrl: p.imageUrl,
                                     name: p.name,
-                                    price: p.price,
+                                    price: p.price.toStringAsFixed(0),
                                     rating: p.rating,
-                                    reviews: p.reviews,
+                                    reviews: p.reviewCount,
                                   ),
                                 );
                               },
@@ -158,9 +192,18 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                           ),
                           const SizedBox(height: 24),
                           // Shop by Categories title
-                          Text(
-                            'Shop by Categories',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                          Container(
+                            width: double.infinity,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Shop by Categories',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold, 
+                                fontSize: 22,
+                                height: 1.2,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
                           ),
                           const SizedBox(height: 16),
                           // Categories grid
@@ -179,34 +222,35 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                               // Assign colors based on index or label
                               Color bgColor;
                               Color iconColor;
-                              switch (c.label) {
+                              switch (c.label ?? c.name) {
                                 case 'Phones':
-                                  bgColor = const Color.fromARGB(102, 199, 196, 196);
+                                  bgColor = Colors.grey[200]!;
                                   iconColor = Colors.teal;
                                   break;
                                 case 'Tablets':
-                                  bgColor = Colors.blue[50]!;
-                                  iconColor = Colors.blueAccent;
-                                  break;
-                                case 'Accessories':
-                                  bgColor = Colors.purple[50]!;
-                                  iconColor = Colors.purple;
+                                  bgColor = Colors.blue[100]!;
+                                  iconColor = Colors.blue[700]!;
                                   break;
                                 case 'Laptops':
-                                  bgColor = Colors.amber[50]!;
-                                  iconColor = Colors.amber[800]!;
+                                  bgColor = Colors.orange[100]!;
+                                  iconColor = Colors.orange[700]!;
                                   break;
                                 case 'Smart Watches':
-                                  bgColor = Colors.green[50]!;
+                                  bgColor = Colors.green[100]!;
                                   iconColor = Colors.green[700]!;
+                                  break;
+                                case 'Headphones':
+                                case 'Accessories':
+                                  bgColor = Colors.purple[100]!;
+                                  iconColor = Colors.purple[700]!;
                                   break;
                                 default:
                                   bgColor = Colors.grey[200]!;
-                                  iconColor = Colors.grey;
+                                  iconColor = Colors.grey[600]!;
                               }
                               return _CategoryCard(
-                                icon: _iconFromString(c.icon),
-                                label: c.label,
+                                icon: _iconFromString(c.icon ?? 'category'),
+                                label: c.label ?? c.name,
                                 color: bgColor,
                                 iconColor: iconColor,
                                 height: 90,
@@ -214,7 +258,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (context) => CategoryProductsPage(
-                                        categoryName: c.label,
+                                        categoryName: c.label ?? c.name,
                                       ),
                                     ),
                                   );
@@ -241,16 +285,20 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
 
 IconData _iconFromString(String iconName) {
   switch (iconName) {
+    case 'phone':
     case 'smartphone':
       return Icons.smartphone;
+    case 'tablet':  
     case 'tablet_mac':
       return Icons.tablet_mac;
-    case 'headphones':
-      return Icons.headphones;
+    case 'laptop':
     case 'laptop_mac':
       return Icons.laptop_mac;
     case 'watch':
       return Icons.watch;
+    case 'headphone':
+    case 'headphones':
+      return Icons.headphones;
     default:
       return Icons.category;
   }
@@ -337,15 +385,26 @@ class _CategoryCardState extends State<_CategoryCard> with SingleTickerProviderS
               color: widget.color,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(widget.icon, color: widget.iconColor, size: 32),
-                  const SizedBox(width: 12),
-                  Text(
-                    widget.label,
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+                  Icon(widget.icon, color: widget.iconColor, size: 28),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      widget.label,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600, 
+                        fontSize: 16,
+                        height: 1.2,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),

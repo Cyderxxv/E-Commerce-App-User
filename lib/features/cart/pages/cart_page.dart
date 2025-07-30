@@ -100,7 +100,7 @@ class CartPage extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  '₫${product.price}',
+                                  '₫${product.price.toStringAsFixed(0)}',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
@@ -109,13 +109,15 @@ class CartPage extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  product.categories.isNotEmpty
-                                      ? product.categories.first
-                                      : '',
+                                  product.brand.isNotEmpty
+                                      ? product.brand
+                                      : product.description,
                                   style: const TextStyle(
                                     color: Colors.grey,
                                     fontSize: 15,
                                   ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 8),
                                 Row(

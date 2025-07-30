@@ -14,25 +14,33 @@ class CartRepository {
       _cartItems.addAll([
         CartItem(
           product: Product(
+            id: '1',
             imageUrl: 'https://cdn.viettablet.com/images/detailed/66/samsung-galaxy-s25-edge-111.jpg',
             name: 'Samsung Galaxy S25 Edge (12/256GB)',
-            price: '25.650.600',
+            price: 25650600.0,
             rating: 4.9,
-            reviews: 256,
+            reviewCount: 256,
             description: 'Flagship Samsung with stunning display and performance.',
-            categories: ['Phones'],
+            brand: 'Samsung',
+            isFeatured: true,
+            categoryId: '1',
+            stock: 10,
           ),
           quantity: 1,
         ),
         CartItem(
           product: Product(
+            id: '2',
             imageUrl: 'https://cdn.mobilecity.vn/mobilecity-vn/images/2025/05/w300/xiaomi-15s-pro-den-cac-bon.jpg.webp',
             name: 'Xiaomi 15S PRO (12/256GB)',
-            price: '14.550.200',
+            price: 14550200.0,
             rating: 4.8,
-            reviews: 128,
+            reviewCount: 128,
             description: 'Affordable powerhouse with premium features.',
-            categories: ['Phones'],
+            brand: 'Xiaomi',
+            isFeatured: true,
+            categoryId: '1',
+            stock: 15,
           ),
           quantity: 2,
         ),
@@ -159,9 +167,7 @@ class CartRepository {
     
     double total = 0;
     for (final item in _cartItems) {
-      final priceString = item.product.price.replaceAll('.', '');
-      final price = double.tryParse(priceString) ?? 0;
-      total += price * item.quantity;
+      total += item.product.price * item.quantity;
     }
     
     return total;

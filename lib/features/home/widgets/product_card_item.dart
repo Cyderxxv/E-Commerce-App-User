@@ -39,7 +39,7 @@ class ProductCardItem extends StatelessWidget {
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Product Image với AspectRatio cố định
             AspectRatio(
@@ -67,52 +67,75 @@ class ProductCardItem extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             
-            // Product Name
-            Text(
-              name,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600, 
-                fontSize: 14,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 4),
-            
-            // Price
-            Text(
-              '₫$price',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold, 
-                fontSize: 15, 
-                color: Colors.brown,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 4),
-            
-            // Rating Row
-            Row(
-              children: [
-                const Icon(Icons.star, color: Colors.amber, size: 14),
-                const SizedBox(width: 4),
-                Text(
-                  '$rating',
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+            // Product Name - Fixed height container
+            Container(
+              height: 40,
+              alignment: Alignment.topLeft,
+              child: Text(
+                name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600, 
+                  fontSize: 14,
+                  height: 1.3,
                 ),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    '($reviews)',
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.left,
+              ),
+            ),
+            const SizedBox(height: 6),
+            
+            // Price - Fixed height
+            Container(
+              height: 22,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '₫$price',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold, 
+                  fontSize: 18, 
+                  color: Colors.brown,
+                  height: 1.0,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(height: 6),
+            
+            // Rating Row - Fixed height
+            Container(
+              height: 20,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Icon(Icons.star, color: Colors.amber, size: 14),
+                  const SizedBox(width: 4),
+                  Text(
+                    '$rating',
+                    style: const TextStyle(
+                      fontSize: 12, 
+                      fontWeight: FontWeight.w500,
+                      height: 1.0,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      '($reviews)',
+                      style: const TextStyle(
+                        fontSize: 12, 
+                        color: Colors.grey,
+                        height: 1.0,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

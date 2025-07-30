@@ -32,7 +32,7 @@ class _CartConfirmPageState extends State<CartConfirmPage> {
           builder: (context, state) {
             if (state is CartLoaded) {
               final cartItems = state.cartItems;
-              final total = cartItems.fold<double>(0, (sum, item) => sum + double.tryParse(item.product.price.replaceAll('.', ''))! * item.quantity);
+              final total = cartItems.fold<double>(0, (sum, item) => sum + (item.product.price * item.quantity));
               final shippingFee = _shippingOption == 0 ? 0 : 30000;
               final totalWithShipping = total + shippingFee;
               return SingleChildScrollView(
@@ -204,7 +204,7 @@ class _CartConfirmPageState extends State<CartConfirmPage> {
             ),
           ),
           const SizedBox(width: 8),
-          Text('₫${item.product.price}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          Text('₫${item.product.price.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
         ],
       ),
     );

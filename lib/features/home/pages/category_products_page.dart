@@ -79,9 +79,12 @@ class CategoryProductsPage extends StatelessWidget {
                 ),
               );
             } else if (state is HomeLoaded) {
-              // Filter products by category
+              // Filter products by category - temporary logic until we pass categoryId
               final filteredProducts = state.products
-                  .where((product) => product.categories.contains(categoryName))
+                  .where((product) => 
+                      product.name.toLowerCase().contains(categoryName.toLowerCase()) ||
+                      product.description.toLowerCase().contains(categoryName.toLowerCase()) ||
+                      product.brand.toLowerCase().contains(categoryName.toLowerCase()))
                   .toList();
 
               if (filteredProducts.isEmpty) {
@@ -238,10 +241,10 @@ class CategoryProductsPage extends StatelessWidget {
             builder: (context) => ProductDetailPage(
               imageUrl: product.imageUrl,
               name: product.name,
-              price: product.price,
+              price: product.price.toStringAsFixed(0),
               description: product.description,
               rating: product.rating,
-              ratingCount: product.reviews,
+              ratingCount: product.reviewCount,
             ),
           ),
         );
@@ -320,7 +323,7 @@ class CategoryProductsPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '₫${product.price}',
+                          '₫${product.price.toStringAsFixed(0)}',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -341,7 +344,7 @@ class CategoryProductsPage extends StatelessWidget {
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
-                                '(${product.reviews})',
+                                '(${product.reviewCount})',
                                 style: const TextStyle(fontSize: 11, color: Colors.grey),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,

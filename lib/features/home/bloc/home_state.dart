@@ -1,5 +1,5 @@
 import '../../../core/domain/product.dart';
-import '../domain/home_repo.dart';
+import '../data/category_model.dart';
 
 abstract class HomeState {}
 
