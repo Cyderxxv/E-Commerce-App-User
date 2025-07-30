@@ -140,6 +140,29 @@ CREATE TABLE reviews (
     UNIQUE(user_id, product_id)
 );
 
+CREATE TABLE purchase_history (
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    user_id BIGINT REFERENCES users(id),
+    order_id BIGINT REFERENCES orders(id),
+    product_id BIGINT REFERENCES products(id),
+    product_name TEXT NOT NULL,
+    product_image_url TEXT,
+    quantity INT NOT NULL,
+    unit_price NUMERIC(10, 2) NOT NULL,
+    total_price NUMERIC(10, 2) NOT NULL,
+    order_status TEXT NOT NULL, -- PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+    payment_method TEXT,
+    is_installment BOOLEAN DEFAULT FALSE,
+    installment_months INT,
+    monthly_payment NUMERIC(10, 2),
+    purchase_date TIMESTAMPTZ NOT NULL,
+    delivery_date TIMESTAMPTZ,
+    tracking_number TEXT,
+    shipping_address TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 CREATE TABLE notifications (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     user_id BIGINT REFERENCES users(id),
@@ -261,7 +284,82 @@ INSERT INTO notifications (user_id, title, message, type, is_read) VALUES
 (3, 'Order Shipped', 'Your Galaxy Z Flip6 is on the way!', 'ORDER', FALSE),
 (1, 'Special Offer', 'Get 20% off on all Samsung products this week!', 'PROMOTION', FALSE);
 
+-- Sample purchase history (historical data)
+INSERT INTO purchase_history (user_id, order_id, product_id, product_name, product_image_url, quantity, unit_price, total_price, order_status, payment_method, is_installment, purchase_date, delivery_date, shipping_address) VALUES 
+-- Test User's delivered Samsung Galaxy S25
+(11, 1, 1, 'Samsung Galaxy S25 Edge (12/256GB)', 'https://cdn.viettablet.com/images/detailed/66/samsung-galaxy-s25-edge-111.jpg', 1, 25650600, 25650600, 'DELIVERED', 'Cash', FALSE, '2024-01-15 10:30:00', '2024-01-20 14:30:00', 'Ho Chi Minh City, Vietnam'),
+
+-- John's MacBook with installment
+(11, 2, 6, 'Apple MacBook Air M4 13-inch (16/512GB)', 'https://bizweb.dktcdn.net/100/453/356/products/mbair-13inch-m4-midnight-1744562440665.jpg?v=1747827209317', 1, 29990000, 29990000, 'PROCESSING', 'Installment', TRUE, '2024-01-20 09:15:00', NULL, '123 Main St, City, State'),
+
+-- Bob's Apple Watch
+(11, 3, 8, 'Apple Watch Series 10 (46mm)', 'https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MXM23ref_FV99_VW_34FR+watch-case-46-aluminum-jetblack-nc-s10_VW_34FR+watch-face-46-aluminum-jetblack-s10_VW_34FR?wid=752&hei=720&bgc=fafafa&trim=1&fmt=p-jpg&qlt=80&.v=TnVrdDZWRlZzTURKbHFqOGh0dGpVRW5TeWJ6QW43NUFnQ2V4cmRFc1VnYUdWejZ5THhpKzJwRmRDYlhxN2o5aXB2QjR6TEZ4ZThxM3VqYkZobmlXM3RGNnlaeXQ4NGFKQTAzc0NGeHR2aVk0VEhOZEFKYmY1ZHNpalQ3YVhOWk9WV', 1, 9990000, 9990000, 'SHIPPED', 'Credit Card', FALSE, '2024-01-25 16:45:00', NULL, '789 Pine Rd, City, State'),
+
+-- Additional historical purchases for Test User
+(1, NULL, 2, 'Xiaomi 15S PRO (12/256GB)', 'https://cdn.mobilecity.vn/mobilecity-vn/images/2025/05/w300/xiaomi-15s-pro-den-cac-bon.jpg.webp', 1, 14550200, 14550200, 'DELIVERED', 'Bank Transfer', FALSE, '2023-12-10 11:20:00', '2023-12-15 09:30:00', 'Ho Chi Minh City, Vietnam'),
+
+(1, NULL, 4, 'Samsung Galaxy Z Flip6 (12/256GB)', 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-4_2.png', 1, 20550200, 20550200, 'DELIVERED', 'Cash', FALSE, '2023-11-05 14:10:00', '2023-11-10 16:45:00', 'Ho Chi Minh City, Vietnam');
+
+-- Update installment information for John's MacBook
+UPDATE purchase_history 
+SET installment_months = 12, monthly_payment = 2499167
+WHERE user_id = 2 AND order_id = 2;
+
+-- Create view for easy purchase history queries
+CREATE VIEW user_purchase_history AS
+SELECT 
+    ph.id,
+    ph.user_id,
+    u.name as user_name,
+    u.email as user_email,
+    ph.order_id,
+    ph.product_id,
+    ph.product_name,
+    ph.product_image_url,
+    ph.quantity,
+    ph.unit_price,
+    ph.total_price,
+    ph.order_status,
+    ph.payment_method,
+    ph.is_installment,
+    ph.installment_months,
+    ph.monthly_payment,
+    ph.purchase_date,
+    ph.delivery_date,
+    ph.tracking_number,
+    ph.shipping_address,
+    CASE 
+        WHEN ph.order_status = 'DELIVERED' THEN 'Completed'
+        WHEN ph.order_status = 'CANCELLED' THEN 'Cancelled'
+        WHEN ph.order_status = 'SHIPPED' THEN 'In Transit'
+        WHEN ph.order_status = 'PROCESSING' THEN 'Processing'
+        ELSE 'Pending'
+    END as status_display,
+    -- Calculate days since purchase
+    EXTRACT(DAYS FROM NOW() - ph.purchase_date) as days_since_purchase,
+    -- Calculate remaining installments if applicable
+    CASE 
+        WHEN ph.is_installment AND ip.paid_months IS NOT NULL 
+        THEN ph.installment_months - ip.paid_months 
+        ELSE NULL 
+    END as remaining_installments,
+    -- Calculate paid amount for installments
+    CASE 
+        WHEN ph.is_installment AND ip.paid_amount IS NOT NULL 
+        THEN ip.paid_amount 
+        ELSE ph.total_price 
+    END as paid_amount
+FROM purchase_history ph
+JOIN users u ON ph.user_id = u.id
+LEFT JOIN installment_plans ip ON ph.order_id = ip.order_id
+ORDER BY ph.purchase_date DESC;
+
 -- Create indexes for better performance
+CREATE INDEX idx_purchase_history_user_id ON purchase_history(user_id);
+CREATE INDEX idx_purchase_history_order_id ON purchase_history(order_id);
+CREATE INDEX idx_purchase_history_product_id ON purchase_history(product_id);
+CREATE INDEX idx_purchase_history_purchase_date ON purchase_history(purchase_date);
+CREATE INDEX idx_purchase_history_order_status ON purchase_history(order_status);
 CREATE INDEX idx_wishlists_user_id ON wishlists(user_id);
 CREATE INDEX idx_wishlists_product_id ON wishlists(product_id);
 CREATE INDEX idx_product_categories_product_id ON product_categories(product_id);
@@ -272,3 +370,79 @@ CREATE INDEX idx_notifications_user_id ON notifications(user_id);
 CREATE INDEX idx_installment_payments_plan_id ON installment_payments(installment_plan_id);
 CREATE INDEX idx_orders_user_id ON orders(user_id);
 CREATE INDEX idx_carts_user_id ON carts(user_id);
+
+-- Function to automatically create purchase history when order is created
+CREATE OR REPLACE FUNCTION create_purchase_history()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Insert purchase history for each order item
+    INSERT INTO purchase_history (
+        user_id, 
+        order_id, 
+        product_id, 
+        product_name, 
+        product_image_url,
+        quantity, 
+        unit_price, 
+        total_price,
+        order_status,
+        payment_method,
+        is_installment,
+        installment_months,
+        monthly_payment,
+        purchase_date,
+        shipping_address
+    )
+    SELECT 
+        NEW.user_id,
+        NEW.id,
+        oi.product_id,
+        p.name,
+        p.image_url,
+        oi.quantity,
+        oi.price,
+        oi.quantity * oi.price,
+        NEW.status,
+        pm.name,
+        NEW.is_installment,
+        CASE WHEN NEW.is_installment THEN ip.total_months ELSE NULL END,
+        CASE WHEN NEW.is_installment THEN ip.monthly_payment ELSE NULL END,
+        NEW.created_at,
+        NEW.shipping_address
+    FROM order_items oi
+    JOIN products p ON oi.product_id = p.id
+    LEFT JOIN payment_methods pm ON NEW.payment_method_id = pm.id
+    LEFT JOIN installment_plans ip ON NEW.id = ip.order_id
+    WHERE oi.order_id = NEW.id;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Function to update purchase history when order status changes
+CREATE OR REPLACE FUNCTION update_purchase_history_status()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Update purchase history status when order status changes
+    UPDATE purchase_history 
+    SET 
+        order_status = NEW.status,
+        delivery_date = CASE WHEN NEW.status = 'DELIVERED' THEN NOW() ELSE delivery_date END,
+        updated_at = NOW()
+    WHERE order_id = NEW.id;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Triggers
+CREATE TRIGGER trigger_create_purchase_history
+    AFTER INSERT ON orders
+    FOR EACH ROW
+    EXECUTE FUNCTION create_purchase_history();
+
+CREATE TRIGGER trigger_update_purchase_history_status
+    AFTER UPDATE ON orders
+    FOR EACH ROW
+    WHEN (OLD.status IS DISTINCT FROM NEW.status)
+    EXECUTE FUNCTION update_purchase_history_status();

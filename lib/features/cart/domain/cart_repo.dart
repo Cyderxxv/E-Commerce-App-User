@@ -1,182 +1,219 @@
 import '../models/cart_item.dart';
 import '../../../core/domain/product.dart';
+import '../../../core/network/dio_network.dart';
+import '../../../core/constants/app_constants.dart';
+import '../../auth/domain/auth_repo.dart';
 
 class CartRepository {
-  // In-memory cart storage for demo
-  final List<CartItem> _cartItems = [];
+  /// Get current user ID from AuthRepository
+  String? _getCurrentUserId() {
+    final currentUser = AuthRepository.instance.getCurrentUserSync();
+    return currentUser?.userId;
+  }
 
-  /// Get all items in cart
+  /// Validate user is logged in
+  void _validateUserLoggedIn() {
+    if (!AuthRepository.instance.isLoggedIn()) {
+      throw Exception('User not logged in. Please login first.');
+    }
+    
+    final userId = _getCurrentUserId();
+    if (userId == null || userId.isEmpty) {
+      throw Exception('Invalid user session. Please login again.');
+    }
+  }
+  
+  /// Get all items in cart from backend
   Future<List<CartItem>> getCartItems() async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    _validateUserLoggedIn();
+    final userId = _getCurrentUserId()!;
     
-    // If cart is empty, add some demo items
-    if (_cartItems.isEmpty) {
-      _cartItems.addAll([
-        CartItem(
-          product: Product(
-            id: '1',
-            imageUrl: 'https://cdn.viettablet.com/images/detailed/66/samsung-galaxy-s25-edge-111.jpg',
-            name: 'Samsung Galaxy S25 Edge (12/256GB)',
-            price: 25650600.0,
-            rating: 4.9,
-            reviewCount: 256,
-            description: 'Flagship Samsung with stunning display and performance.',
-            brand: 'Samsung',
-            isFeatured: true,
-            categoryId: '1',
-            stock: 10,
-          ),
-          quantity: 1,
-        ),
-        CartItem(
-          product: Product(
-            id: '2',
-            imageUrl: 'https://cdn.mobilecity.vn/mobilecity-vn/images/2025/05/w300/xiaomi-15s-pro-den-cac-bon.jpg.webp',
-            name: 'Xiaomi 15S PRO (12/256GB)',
-            price: 14550200.0,
-            rating: 4.8,
-            reviewCount: 128,
-            description: 'Affordable powerhouse with premium features.',
-            brand: 'Xiaomi',
-            isFeatured: true,
-            categoryId: '1',
-            stock: 15,
-          ),
-          quantity: 2,
-        ),
-      ]);
+    await DioNetwork.instant.init(AppConstants.baseUrl);
+    
+    final response = await DioNetwork.instant.dio.get(
+      '/cart',
+      queryParameters: {'user_id': userId},
+    );
+    
+    if (response.statusCode == 200) {
+      final data = response.data['data'];
+      final List<dynamic> items = data['items'] ?? [];
+      
+      return items.map((item) {
+        return CartItem(
+          id: item['id'].toString(),
+          product: Product.fromJson(item['product']),
+          quantity: item['quantity'],
+        );
+      }).toList();
     }
     
-    return List.from(_cartItems);
+    throw Exception('Failed to load cart items: ${response.statusMessage}');
   }
 
-  /// Add item to cart
+  /// Add item to cart via backend API
   Future<CartOperationResult> addToCart(Product product, {int quantity = 1}) async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    _validateUserLoggedIn();
+    final userId = _getCurrentUserId()!;
     
-    try {
-      // Check if item already exists in cart
-      final existingIndex = _cartItems.indexWhere(
-        (item) => item.product.name == product.name,
-      );
-      
-      if (existingIndex != -1) {
-        // Update quantity if item already exists
-        _cartItems[existingIndex].quantity += quantity;
-      } else {
-        // Add new item
-        _cartItems.add(CartItem(product: product, quantity: quantity));
-      }
-      
+    await DioNetwork.instant.init(AppConstants.baseUrl);
+    
+    final response = await DioNetwork.instant.dio.post(
+      '/cart',
+      queryParameters: {'user_id': userId},
+      data: {
+        'product_id': int.tryParse(product.id) ?? 1,
+        'quantity': quantity,
+      },
+    );
+    
+    if (response.statusCode == 201) {
+      // Get updated cart items
+      final cartItems = await getCartItems();
       return CartOperationResult(
         success: true,
-        message: 'Item added to cart successfully',
-        cartItems: List.from(_cartItems),
-      );
-    } catch (e) {
-      return CartOperationResult(
-        success: false,
-        message: 'Failed to add item to cart',
-        cartItems: List.from(_cartItems),
+        message: response.data['message'] ?? 'Item added to cart successfully',
+        cartItems: cartItems,
       );
     }
+    
+    throw Exception('Failed to add item to cart: ${response.statusMessage}');
   }
 
-  /// Remove item from cart
-  Future<CartOperationResult> removeFromCart(String productName) async {
-    await Future.delayed(const Duration(milliseconds: 300));
+  /// Remove item from cart via backend API
+  Future<CartOperationResult> removeFromCart(String cartItemId) async {
+    _validateUserLoggedIn();
+    final userId = _getCurrentUserId()!;
     
-    try {
-      _cartItems.removeWhere((item) => item.product.name == productName);
-      
+    await DioNetwork.instant.init(AppConstants.baseUrl);
+    
+    final response = await DioNetwork.instant.dio.delete(
+      '/cart/$cartItemId',
+      queryParameters: {'user_id': userId},
+    );
+    
+    if (response.statusCode == 200) {
+      final cartItems = await getCartItems();
       return CartOperationResult(
         success: true,
-        message: 'Item removed from cart successfully',
-        cartItems: List.from(_cartItems),
-      );
-    } catch (e) {
-      return CartOperationResult(
-        success: false,
-        message: 'Failed to remove item from cart',
-        cartItems: List.from(_cartItems),
+        message: response.data['message'] ?? 'Item removed from cart successfully',
+        cartItems: cartItems,
       );
     }
-  }
-
-  /// Update item quantity
-  Future<CartOperationResult> updateQuantity(String productName, int newQuantity) async {
-    await Future.delayed(const Duration(milliseconds: 300));
     
-    try {
-      if (newQuantity <= 0) {
-        return removeFromCart(productName);
-      }
-      
-      final itemIndex = _cartItems.indexWhere(
-        (item) => item.product.name == productName,
-      );
-      
-      if (itemIndex != -1) {
-        _cartItems[itemIndex].quantity = newQuantity;
-        
-        return CartOperationResult(
-          success: true,
-          message: 'Quantity updated successfully',
-          cartItems: List.from(_cartItems),
-        );
-      } else {
-        return CartOperationResult(
-          success: false,
-          message: 'Item not found in cart',
-          cartItems: List.from(_cartItems),
-        );
-      }
-    } catch (e) {
-      return CartOperationResult(
-        success: false,
-        message: 'Failed to update quantity',
-        cartItems: List.from(_cartItems),
-      );
-    }
+    throw Exception('Failed to remove item from cart: ${response.statusMessage}');
   }
 
-  /// Clear all items from cart
+  /// Update item quantity via backend API
+  Future<CartOperationResult> updateQuantity(String cartItemId, int newQuantity) async {
+    _validateUserLoggedIn();
+    final userId = _getCurrentUserId()!;
+    
+    if (newQuantity <= 0) {
+      return removeFromCart(cartItemId);
+    }
+    
+    await DioNetwork.instant.init(AppConstants.baseUrl);
+    
+    final response = await DioNetwork.instant.dio.put(
+      '/cart/$cartItemId',
+      queryParameters: {'user_id': userId},
+      data: {
+        'quantity': newQuantity,
+      },
+    );
+    
+    if (response.statusCode == 200) {
+      final cartItems = await getCartItems();
+      return CartOperationResult(
+        success: true,
+        message: response.data['message'] ?? 'Quantity updated successfully',
+        cartItems: cartItems,
+      );
+    }
+    
+    throw Exception('Failed to update quantity: ${response.statusMessage}');
+  }
+
+  /// Clear all items from cart via backend API
   Future<CartOperationResult> clearCart() async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    _validateUserLoggedIn();
+    final userId = _getCurrentUserId()!;
     
-    try {
-      _cartItems.clear();
-      
+    await DioNetwork.instant.init(AppConstants.baseUrl);
+    
+    final response = await DioNetwork.instant.dio.delete(
+      '/cart',
+      queryParameters: {'user_id': userId},
+    );
+    
+    if (response.statusCode == 200) {
       return CartOperationResult(
         success: true,
-        message: 'Cart cleared successfully',
+        message: response.data['message'] ?? 'Cart cleared successfully',
         cartItems: [],
       );
-    } catch (e) {
-      return CartOperationResult(
-        success: false,
-        message: 'Failed to clear cart',
-        cartItems: List.from(_cartItems),
-      );
     }
+    
+    throw Exception('Failed to clear cart: ${response.statusMessage}');
   }
 
-  /// Get cart total amount
+  /// Get cart total amount from backend
   Future<double> getCartTotal() async {
-    await Future.delayed(const Duration(milliseconds: 100));
+    _validateUserLoggedIn();
+    final userId = _getCurrentUserId()!;
     
-    double total = 0;
-    for (final item in _cartItems) {
-      total += item.product.price * item.quantity;
+    await DioNetwork.instant.init(AppConstants.baseUrl);
+    
+    final response = await DioNetwork.instant.dio.get(
+      '/cart',
+      queryParameters: {'user_id': userId},
+    );
+    
+    if (response.statusCode == 200) {
+      final data = response.data['data'];
+      return (data['total'] ?? 0.0).toDouble();
     }
     
-    return total;
+    throw Exception('Failed to get cart total: ${response.statusMessage}');
   }
 
   /// Get cart items count
   Future<int> getCartItemsCount() async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    return _cartItems.fold<int>(0, (sum, item) => sum + item.quantity);
+    final cartItems = await getCartItems();
+    return cartItems.fold<int>(0, (sum, item) => sum + item.quantity);
+  }
+
+  // Helper methods for backward compatibility
+
+  /// Remove item by product name (for backward compatibility)
+  Future<CartOperationResult> removeFromCartByProductName(String productName) async {
+    final cartItems = await getCartItems();
+    final cartItem = cartItems.firstWhere(
+      (item) => item.product.name == productName,
+      orElse: () => throw Exception('Product not found in cart'),
+    );
+    
+    if (cartItem.id != null) {
+      return removeFromCart(cartItem.id!);
+    }
+    
+    throw Exception('Cart item ID not found');
+  }
+
+  /// Update quantity by product name (for backward compatibility)
+  Future<CartOperationResult> updateQuantityByProductName(String productName, int newQuantity) async {
+    final cartItems = await getCartItems();
+    final cartItem = cartItems.firstWhere(
+      (item) => item.product.name == productName,
+      orElse: () => throw Exception('Product not found in cart'),
+    );
+    
+    if (cartItem.id != null) {
+      return updateQuantity(cartItem.id!, newQuantity);
+    }
+    
+    throw Exception('Cart item ID not found');
   }
 }
 

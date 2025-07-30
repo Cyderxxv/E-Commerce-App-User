@@ -64,19 +64,19 @@ class CartPage extends StatelessWidget {
               debugPrint('CartPage: current state = $state');
 
               if (state is CartLoaded || state is CartOperationSuccess) {
-              List<CartItem> cartItems;
-              
-              if (state is CartLoaded) {
-                cartItems = state.cartItems;
-              } else {
-                cartItems = (state as CartOperationSuccess).cartItems;
-              }
-              
-              debugPrint('DEBUG: Cart with ${cartItems.length} items');
+                List<CartItem> cartItems;
+                
+                if (state is CartLoaded) {
+                  cartItems = state.cartItems;
+                } else {
+                  cartItems = (state as CartOperationSuccess).cartItems;
+                }
+                
+                debugPrint('DEBUG: Cart with ${cartItems.length} items');
 
-              if (cartItems.isEmpty) {
-                return const Center(child: Text("Your cart is empty"));
-              }
+                if (cartItems.isEmpty) {
+                  return const Center(child: Text("Your cart is empty"));
+                }
 
               return ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -223,8 +223,6 @@ class CartPage extends StatelessWidget {
             return FloatingActionButton.extended(
               onPressed: () {
                 final cartBloc = BlocProvider.of<CartBloc>(context);
-                
-                // Navigate without triggering new cart load
                 Navigator.push(
                   context,
                   MaterialPageRoute(

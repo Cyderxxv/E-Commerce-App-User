@@ -2,7 +2,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class StoreData implements _CacheKey {
   static final StoreData instant = StoreData._internal();
-
   StoreData._internal();
 
   late SharedPreferences pref;
@@ -27,7 +26,6 @@ class StoreData implements _CacheKey {
 
 abstract class _CacheKey {
   _CacheKey._internal();
-
   static const String token = "xToken";
   static const String refreshToken = "xTokenRefresh";
 }

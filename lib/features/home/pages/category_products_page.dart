@@ -5,6 +5,7 @@ import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
 import 'product_detail_page.dart';
+import '../../cart/bloc/cart_bloc.dart';
 
 class CategoryProductsPage extends StatelessWidget {
   final String categoryName;
@@ -238,13 +239,17 @@ class CategoryProductsPage extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => ProductDetailPage(
-              imageUrl: product.imageUrl,
-              name: product.name,
-              price: product.price.toStringAsFixed(0),
-              description: product.description,
-              rating: product.rating,
-              ratingCount: product.reviewCount,
+            builder: (context) => BlocProvider.value(
+              value: BlocProvider.of<CartBloc>(context),
+              child: ProductDetailPage(
+                imageUrl: product.imageUrl,
+                name: product.name,
+                price: product.price.toStringAsFixed(0),
+                description: product.description,
+                rating: product.rating,
+                ratingCount: product.reviewCount,
+                product: product, // Pass the full product object
+              ),
             ),
           ),
         );

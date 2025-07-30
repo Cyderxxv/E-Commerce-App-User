@@ -8,6 +8,7 @@ import '../bloc/home_state.dart';
 import '../pages/product_detail_page.dart';
 import '../pages/category_products_page.dart';
 import '../widgets/product_card_item.dart';
+import '../../cart/bloc/cart_bloc.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -168,13 +169,17 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                                   onTap: () {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (_) => ProductDetailPage(
-                                          imageUrl: p.imageUrl,
-                                          name: p.name,
-                                          price: p.price.toStringAsFixed(0),
-                                          description: p.description,
-                                          rating: p.rating,
-                                          ratingCount: p.reviewCount,
+                                        builder: (_) => BlocProvider.value(
+                                          value: BlocProvider.of<CartBloc>(context),
+                                          child: ProductDetailPage(
+                                            imageUrl: p.imageUrl,
+                                            name: p.name,
+                                            price: p.price.toStringAsFixed(0),
+                                            description: p.description,
+                                            rating: p.rating,
+                                            ratingCount: p.reviewCount,
+                                            product: p, // Pass the full product object
+                                          ),
                                         ),
                                       ),
                                     );

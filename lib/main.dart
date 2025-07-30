@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/profile/bloc/profile_bloc.dart';
+import 'features/cart/bloc/cart_bloc.dart';
 import 'features/splash/splash.dart';
 
 void main() {
@@ -20,6 +21,9 @@ class MainApp extends StatelessWidget {
         ),
         BlocProvider<ProfileBloc>(
           create: (_) => ProfileBloc(),
+        ),
+        BlocProvider<CartBloc>(
+          create: (_) => CartBloc(),
         ),
       ],
       child: const MaterialApp(

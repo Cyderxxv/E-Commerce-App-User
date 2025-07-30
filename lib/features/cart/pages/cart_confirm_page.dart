@@ -30,8 +30,19 @@ class _CartConfirmPageState extends State<CartConfirmPage> {
       body: SafeArea(
         child: BlocBuilder<CartBloc, CartState>(
           builder: (context, state) {
-            if (state is CartLoaded) {
-              final cartItems = state.cartItems;
+            debugPrint('CartConfirmPage: current state = $state');
+            
+            if (state is CartLoaded || state is CartOperationSuccess) {
+              List<CartItem> cartItems;
+              
+              if (state is CartLoaded) {
+                cartItems = state.cartItems;
+                debugPrint('DEBUG: CartConfirmPage - CartLoaded with ${cartItems.length} items');
+              } else {
+                cartItems = (state as CartOperationSuccess).cartItems;
+                debugPrint('DEBUG: CartConfirmPage - CartOperationSuccess with ${cartItems.length} items');
+              }
+              
               final total = cartItems.fold<double>(0, (sum, item) => sum + (item.product.price * item.quantity));
               final shippingFee = _shippingOption == 0 ? 0 : 30000;
               final totalWithShipping = total + shippingFee;
@@ -136,6 +147,8 @@ class _CartConfirmPageState extends State<CartConfirmPage> {
                 ),
               );
             }
+            
+            debugPrint('DEBUG: CartConfirmPage - Showing loading (state: $state)');
             return const Center(child: CircularProgressIndicator());
           },
         ),

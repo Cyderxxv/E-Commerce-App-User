@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/domain/product.dart';
+import '../../cart/bloc/cart_bloc.dart';
+import '../../cart/bloc/cart_event.dart';
+import '../../cart/bloc/cart_state.dart';
 
 class ProductDetailPage extends StatelessWidget {
   final String imageUrl;
@@ -7,7 +12,7 @@ class ProductDetailPage extends StatelessWidget {
   final String description;
   final double rating;
   final int ratingCount;
-  // final List<String> colors;
+  final Product? product; // Add product object for cart operations
 
   const ProductDetailPage({
     Key? key,
@@ -17,7 +22,7 @@ class ProductDetailPage extends StatelessWidget {
     required this.description,
     required this.rating,
     required this.ratingCount,
-    // required this.colors,
+    this.product,
   }) : super(key: key);
 
   @override
@@ -125,7 +130,48 @@ class ProductDetailPage extends StatelessWidget {
                     backgroundColor: const Color(0xFF3DDCFF),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    // Add to cart functionality
+                    if (product != null) {
+                      context.read<CartBloc>().add(AddToCart(product!));
+                      
+                      // Show success snackbar
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('${product!.name} added to cart!'),
+                          backgroundColor: const Color(0xFF3DDCFF),
+                          duration: const Duration(seconds: 2),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    } else {
+                      // Fallback: create product from available data
+                      final fallbackProduct = Product(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        imageUrl: imageUrl,
+                        name: name,
+                        description: description,
+                        price: double.tryParse(price.replaceAll('₫', '').replaceAll('.', '').replaceAll(',', '')) ?? 0.0,
+                        rating: rating,
+                        reviewCount: ratingCount,
+                        brand: 'Unknown',
+                        isFeatured: false,
+                        categoryId: '1',
+                        stock: 10,
+                      );
+                      
+                      context.read<CartBloc>().add(AddToCart(fallbackProduct));
+                      
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('$name added to cart!'),
+                          backgroundColor: const Color(0xFF3DDCFF),
+                          duration: const Duration(seconds: 2),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
+                  },
                   child: const Text('Add to Cart', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white)),
                 ),
               ),
@@ -133,25 +179,6 @@ class ProductDetailPage extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _ColorChip extends StatelessWidget {
-  final String label;
-  const _ColorChip({required this.label, Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(right: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF3DDCFF)),
-      ),
-      child: Text(label, style: const TextStyle(color: Color(0xFF3DDCFF), fontWeight: FontWeight.bold)),
     );
   }
 }
