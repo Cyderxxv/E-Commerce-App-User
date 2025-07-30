@@ -4,25 +4,24 @@ import 'profile_state.dart';
 import '../domain/profile_repo.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
-  final ProfileRepository _profileRepository;
-
-  ProfileBloc({ProfileRepository? profileRepository})
-      : _profileRepository = profileRepository ?? ProfileRepository(),
-        super(ProfileInitial()) {
+ ProfileBloc() : super(ProfileInitial()) {
     on<LoadProfileEvent>(_onLoadProfile);
     on<UpdateProfileEvent>(_onUpdateProfile);
-  }
+  } 
 
   Future<void> _onLoadProfile(LoadProfileEvent event, Emitter<ProfileState> emit) async {
     emit(ProfileLoading());
     
     try {
-      final profileData = await _profileRepository.getCurrentProfile();
+      final profileData = await ProfileRepository().getCurrentProfile();
       emit(ProfileLoaded(
         name: profileData.name,
         email: profileData.email,
         avatarUrl: profileData.avatarUrl,
         appVersion: profileData.appVersion,
+        dateOfBirth: profileData.dateOfBirth,
+        gender: profileData.gender,
+        address: profileData.address,
       ));
     } catch (e) {
       emit(ProfileError(message: 'Failed to load profile: ${e.toString()}'));
@@ -33,10 +32,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     emit(ProfileLoading());
     
     try {
-      final result = await _profileRepository.updateProfile(
+      final result = await ProfileRepository().updateProfile(
         name: event.name,
         email: event.email,
         avatarUrl: event.avatarUrl,
+        dateOfBirth: event.dateOfBirth,
+        gender: event.gender,
+        address: event.address,
       );
       
       if (result.success) {
@@ -46,6 +48,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           avatarUrl: result.profileData.avatarUrl,
           appVersion: result.profileData.appVersion,
           message: result.message,
+          dateOfBirth: result.profileData.dateOfBirth,
+          gender: result.profileData.gender,
+          address: result.profileData.address,
         ));
         
         // After showing success message, emit loaded state
@@ -54,6 +59,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           email: result.profileData.email,
           avatarUrl: result.profileData.avatarUrl,
           appVersion: result.profileData.appVersion,
+          dateOfBirth: result.profileData.dateOfBirth,
+          gender: result.profileData.gender,
+          address: result.profileData.address,
         ));
       } else {
         emit(ProfileError(message: result.message));

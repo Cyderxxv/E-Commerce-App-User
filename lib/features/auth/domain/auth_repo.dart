@@ -13,7 +13,7 @@ class AuthRepository {
   static bool _isLoggedIn = false;
   static UserModel? _currentUser;
   static String? _authToken;
-  
+
   /// Login with email and password (API integration)
   Future<AuthResult> login(InputLoginModel loginData) async {
     try {
@@ -42,7 +42,7 @@ class AuthRepository {
           email: userData['email'] ?? '',
           address: userData['address'] ?? '',
           dateOfBirth: userData['date_of_birth'] ?? '',
-          avatarUrl: userData['photo'] ?? 'https://i.pravatar.cc/150?img=3',
+          avatarUrl: userData['photo'] ?? 'photo',
           gender: userData['gender'] ?? '',
           status: userData['status'] ?? 'Active',
           createdAt: DateTime.tryParse(userData['created_at'] ?? '') ?? DateTime.now(),

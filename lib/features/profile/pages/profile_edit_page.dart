@@ -15,6 +15,11 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _avatarController;
+  late TextEditingController _dateOfBirthController;
+  late TextEditingController _addressController;
+  String _selectedGender = 'Male';
+  
+  final List<String> _genderOptions = ['Male', 'Female'];
 
   @override
   void initState() {
@@ -23,15 +28,26 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     _nameController = TextEditingController();
     _emailController = TextEditingController();
     _avatarController = TextEditingController();
+    _dateOfBirthController = TextEditingController();
+    _addressController = TextEditingController();
     
     // Access the bloc state safely after ensuring the widget is properly mounted
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         final state = context.read<ProfileBloc>().state;
         if (state is ProfileLoaded) {
+          print('🔧 ProfileEditPage loading state data:');
+          print('  - dateOfBirth: ${state.dateOfBirth}');
+          print('  - gender: ${state.gender}');
+          print('  - address: ${state.address}');
+          
           _nameController.text = state.name;
           _emailController.text = state.email;
           _avatarController.text = state.avatarUrl;
+          // Load actual data from user profile
+          _dateOfBirthController.text = state.dateOfBirth ?? '1990-01-01';
+          _selectedGender = state.gender ?? 'Male';
+          _addressController.text = state.address ?? '';
           setState(() {}); // Refresh UI with new values
         }
       }
@@ -43,6 +59,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     _nameController.dispose();
     _emailController.dispose();
     _avatarController.dispose();
+    _dateOfBirthController.dispose();
+    _addressController.dispose();
     super.dispose();
   }
 
@@ -52,10 +70,20 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         name: _nameController.text,
         email: _emailController.text,
         avatarUrl: _avatarController.text,
+        dateOfBirth: _dateOfBirthController.text,
+        gender: _selectedGender,
+        address: _addressController.text,
       ),
     );
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile updated successfully!')),
+      SnackBar(
+        content: Text(
+          'Profile updated successfully!\n'
+          'Date of Birth: ${_dateOfBirthController.text}\n'
+          'Gender: $_selectedGender\n'
+          'Address: ${_addressController.text}'
+        ),
+      ),
     );
     Navigator.of(context).pop();
   }
@@ -90,16 +118,30 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             final String name;
             final String email;
             final String avatarUrl;
+            final String? dateOfBirth;
+            final String? gender;
+            final String? address;
             
             if (profileState is ProfileLoaded) {
               name = profileState.name;
               email = profileState.email;
               avatarUrl = profileState.avatarUrl;
+              dateOfBirth = profileState.dateOfBirth;
+              gender = profileState.gender;
+              address = profileState.address;
+              
+              print('🔧 ProfileEditPage build - ProfileLoaded:');
+              print('  - dateOfBirth: $dateOfBirth');
+              print('  - gender: $gender');
+              print('  - address: $address');
             } else {
               final successState = profileState as ProfileUpdateSuccess;
               name = successState.name;
               email = successState.email;
               avatarUrl = successState.avatarUrl;
+              dateOfBirth = successState.dateOfBirth;
+              gender = successState.gender;
+              address = successState.address;
             }
             
             // Initialize controllers if empty
@@ -111,6 +153,16 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             }
             if (_avatarController.text.isEmpty) {
               _avatarController.text = avatarUrl;
+            }
+            if (_dateOfBirthController.text.isEmpty) {
+              _dateOfBirthController.text = dateOfBirth ?? '1990-01-01';
+            }
+            if (_addressController.text.isEmpty) {
+              _addressController.text = address ?? '';
+            }
+            // Update gender if available from state
+            if (gender != null && gender.isNotEmpty) {
+              _selectedGender = gender;
             }
             
             return Padding(
@@ -148,6 +200,61 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                       labelText: 'Email',
                       border: OutlineInputBorder(),
                     ),
+                  ),
+                  const SizedBox(height: 18),
+                  TextField(
+                    controller: _dateOfBirthController,
+                    decoration: const InputDecoration(
+                      labelText: 'Date of Birth (YYYY-MM-DD)',
+                      border: OutlineInputBorder(),
+                      suffixIcon: Icon(Icons.calendar_today),
+                    ),
+                    readOnly: true,
+                    onTap: () async {
+                      final DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.tryParse(_dateOfBirthController.text) ?? DateTime(1990),
+                        firstDate: DateTime(1950),
+                        lastDate: DateTime.now(),
+                      );
+                      if (picked != null) {
+                        setState(() {
+                          _dateOfBirthController.text = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 18),
+                  DropdownButtonFormField<String>(
+                    value: _selectedGender,
+                    decoration: const InputDecoration(
+                      labelText: 'Gender',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: _genderOptions.map((String gender) {
+                      return DropdownMenuItem<String>(
+                        value: gender,
+                        child: Text(gender),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          _selectedGender = newValue;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 18),
+                  TextField(
+                    controller: _addressController,
+                    decoration: const InputDecoration(
+                      labelText: 'Address',
+                      border: OutlineInputBorder(),
+                      hintText: 'Enter your full address',
+                    ),
+                    maxLines: 3,
+                    textInputAction: TextInputAction.newline,
                   ),
                 ],
               ),
