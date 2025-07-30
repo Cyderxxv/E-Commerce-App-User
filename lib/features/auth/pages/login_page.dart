@@ -17,7 +17,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
-  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _loginError = false;
@@ -39,25 +39,25 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   @override
   void dispose() {
-    _phoneController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     _shakeController.dispose();
     super.dispose();
   }
 
   void _onLoginPressed() {
-    final phone = _phoneController.text.trim();
+    final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
-    if (phone.isEmpty || password.isEmpty) {
+    if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter phone and password')),
+        const SnackBar(content: Text('Please enter email and password')),
       );
       return;
     }
     setState(() {
       _loginError = false;
     });
-    context.read<AuthBloc>().add(LoginEvent(data: InputLoginModel(phoneNumber: phone, password: password)));
+    context.read<AuthBloc>().add(LoginEvent(data: InputLoginModel(phoneNumber: email, password: password)));
   }
 
   void _triggerShake() {
@@ -103,6 +103,33 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     'Login and enjoy shopping!',
                     style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.blue.shade200),
+                    ),
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '🔐 Test Login Credentials:',
+                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Email: test@example.com',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        Text(
+                          'Password: 123456',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 32),
                   AnimatedBuilder(
                     animation: _shakeController,
@@ -120,12 +147,12 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         border: Border.all(color: _loginError ? Colors.red : Colors.grey.shade300),
                       ),
                       child: TextField(
-                        controller: _phoneController,
-                        keyboardType: TextInputType.phone,
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
                         decoration: const InputDecoration(
-                          prefixIcon: Icon(Icons.person_outline),
-                          labelText: 'Phone Number',
-                          hintText: '09xxxxxxxx',
+                          prefixIcon: Icon(Icons.email_outlined),
+                          labelText: 'Email Address',
+                          hintText: 'example@email.com',
                           border: InputBorder.none,
                         ),
                       ),

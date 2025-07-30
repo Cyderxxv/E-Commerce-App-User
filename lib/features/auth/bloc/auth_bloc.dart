@@ -5,11 +5,9 @@ import 'auth_event.dart';
 import 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final AuthRepository _authRepository;
-
-  AuthBloc({AuthRepository? authRepository})
-      : _authRepository = authRepository ?? AuthRepository(),
-        super(AuthUnauthenticated()) {
+  final AuthRepository _authRepository = AuthRepository.instance;
+  
+  AuthBloc() : super(AuthInitial()) {
     on<CheckAuthEvent>(_onCheckAuth);
     on<RegisterEvent>(_onRegister);
     on<LoginEvent>(_onLogin);
@@ -17,17 +15,34 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LogoutEvent>(_onLogout);
   }
 
+  // AuthBloc({AuthRepositorysitory? AuthRepositorysitory})
+  //     : AuthRepository = AuthRepositorysitory ?? AuthRepositorysitory(),
+  //       super(AuthUnauthenticated()) {
+  //   on<CheckAuthEvent>(_onCheckAuth);
+  //   on<RegisterEvent>(_onRegister);
+  //   on<LoginEvent>(_onLogin);
+  //   on<ForgotPasswordEvent>(_onForgotPassword);
+  //   on<LogoutEvent>(_onLogout);
+  // }
+
   Future<void> _onCheckAuth(CheckAuthEvent event, Emitter<AuthState> emit) async {
-    // Check if user is already logged in from storage or service
-    final isLoggedIn = _authRepository.isLoggedIn();
-    if (isLoggedIn) {
-      final user = _authRepository.getCurrentUserSync();
-      if (user != null) {
-        emit(AuthAuthenticated(user: user));
+    try {
+      // Check if user is already logged in using instance method
+      final isLoggedIn = _authRepository.isLoggedIn();
+      if (isLoggedIn) {
+        // Get current user using instance method
+        final user = _authRepository.getCurrentUserSync();
+        if (user != null) {
+          emit(AuthAuthenticated(user: user));
+        } else {
+          emit(AuthUnauthenticated());
+        }
       } else {
         emit(AuthUnauthenticated());
       }
-    } else {
+    } catch (e) {
+      // Handle any errors during auth check
+      print('❌ Error checking auth status: $e');
       emit(AuthUnauthenticated());
     }
   }

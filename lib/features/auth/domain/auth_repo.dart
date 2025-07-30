@@ -1,68 +1,195 @@
+import 'package:cyder_store/core/constants/app_constants.dart';
 import '../models/user_model.dart';
 import '../models/input_login_model.dart';
 import '../models/input_register_model.dart';
 import '../models/input_forgot_password_model.dart';
+import 'package:dio/dio.dart';
+import '../../../core/network/dio_network.dart';
 
 class AuthRepository {
+  AuthRepository._();
+  static final AuthRepository _instance = AuthRepository._();
+  static AuthRepository get instance => _instance;
   static bool _isLoggedIn = false;
+  static UserModel? _currentUser;
+  static String? _authToken;
   
-  // Mock userdata
-  static final UserModel _mockUser = UserModel(
-    userId: 'user_001',
-    fullname: 'Khiem Pham',
-    phoneNumber: '+84987654321',
-    email: 'phamnguyengiakhiem@gmail.com',
-    address: '123 Main Street, Ho Chi Minh City',
-    dateOfBirth: '1995-05-15',
-    avatarUrl: 'https://i.pravatar.cc/150?img=3',
-    gender: 'Male',
-    status: 'Active',
-    createdAt: DateTime.now().subtract(const Duration(days: 30)),
-  );
-
-  /// Login with phone number and password
+  /// Login with email and password (API integration)
   Future<AuthResult> login(InputLoginModel loginData) async {
-    await Future.delayed(const Duration(seconds: 1));
-    
-    // Mock login validation  
-    if (loginData.password == '123456') {
-      _isLoggedIn = true;
-      return AuthResult(
-        success: true,
-        user: _mockUser,
-        message: 'Login successful',
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      DioNetwork.instant.init(AppConstants.baseUrl);
+      final response = await DioNetwork.instant.dio.post(
+        '/auth/login',
+        data: {
+          'email': loginData.phoneNumber,
+          'password': loginData.password,
+        },
+        options: Options(headers: headers),
       );
-    } else {
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final userData = data['data']['user'];
+        final token = data['data']['token'];
+        
+        _currentUser = UserModel(
+          userId: userData['id'].toString(),
+          fullname: userData['name'] ?? '',
+          phoneNumber: userData['phone_number'] ?? '',
+          email: userData['email'] ?? '',
+          address: userData['address'] ?? '',
+          dateOfBirth: userData['date_of_birth'] ?? '',
+          avatarUrl: userData['photo'] ?? 'https://i.pravatar.cc/150?img=3',
+          gender: userData['gender'] ?? '',
+          status: userData['status'] ?? 'Active',
+          createdAt: DateTime.tryParse(userData['created_at'] ?? '') ?? DateTime.now(),
+        );
+        
+        _authToken = token;
+        _isLoggedIn = true;
+        
+        return AuthResult(
+          success: true,
+          user: _currentUser,
+          message: data['message'] ?? 'Login successful',
+        );
+      } else {
+        return AuthResult(
+          success: false,
+          user: null,
+          message: response.data['error'] ?? 'Login failed',
+        );
+      }
+    } catch (e) {      
+      if (e is DioException) {
+        String errorMessage = 'Login failed';        
+        if (e.response != null) {
+          final statusCode = e.response?.statusCode;
+          final responseData = e.response?.data;
+          
+          if (statusCode == 404) {
+            errorMessage = 'API endpoint not found - check backend routes';
+          } else if (responseData is Map<String, dynamic>) {
+            errorMessage = responseData['error'] ?? responseData['message'] ?? 'Login failed';
+          } else {
+            errorMessage = 'Server error (${statusCode})';
+          }
+        } else if (e.type == DioExceptionType.connectionTimeout) {
+          errorMessage = 'Connection timeout - check your internet';
+        } else if (e.type == DioExceptionType.receiveTimeout) {
+          errorMessage = 'Server response timeout';
+        } else if (e.type == DioExceptionType.connectionError) {
+          errorMessage = 'Cannot connect to server - make sure backend is running';
+        } else {
+          errorMessage = 'Network error: ${e.message}';
+        }
+        
+        return AuthResult(
+          success: false,
+          user: null,
+          message: errorMessage,
+        );
+      }
+      
       return AuthResult(
         success: false,
         user: null,
-        message: 'Invalid phone number or password',
+        message: 'Unexpected error: ${e.toString()}',
       );
     }
   }
 
-  /// Register new user account
+  /// Register (API integration)
   Future<AuthResult> register(InputRegisterModel registerData) async {
-    await Future.delayed(const Duration(seconds: 1));
-    
-    // Mock registration - always success for demo
-    final newUser = UserModel(
-      userId: 'user_${DateTime.now().millisecondsSinceEpoch}',
-      fullname: registerData.fullname,
-      phoneNumber: registerData.phoneNumber,
-      email: registerData.email,
-      status: 'Active',
-      createdAt: DateTime.now(),
-    );
-    
-    return AuthResult(
-      success: true,
-      user: newUser,
-      message: 'Registration successful',
-    );
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      DioNetwork.instant.init(AppConstants.baseUrl);
+      final response = await DioNetwork.instant.dio.post(
+        '/auth/register',
+        data: {
+          'name': registerData.fullname,
+          'email': registerData.email,
+          'phone_number': registerData.phoneNumber,
+          'password': registerData.password,
+        },
+        options: Options(headers: headers),
+      );
+
+      if (response.statusCode == 201) {
+        final data = response.data;
+        final userData = data['data']['user'];
+        final token = data['data']['token'];
+        
+        final newUser = UserModel(
+          userId: userData['id'].toString(),
+          fullname: userData['name'] ?? '',
+          phoneNumber: userData['phone_number'] ?? '',
+          email: userData['email'] ?? '',
+          address: userData['address'] ?? '',
+          dateOfBirth: userData['date_of_birth'] ?? '',
+          avatarUrl: userData['photo'] ?? 'https://i.pravatar.cc/150?img=3',
+          gender: userData['gender'] ?? '',
+          status: userData['status'] ?? 'Active',
+          createdAt: DateTime.tryParse(userData['created_at'] ?? '') ?? DateTime.now(),
+        );
+        
+        _currentUser = newUser;
+        _authToken = token;
+        _isLoggedIn = true;
+        
+        return AuthResult(
+          success: true,
+          user: newUser,
+          message: data['message'] ?? 'Registration successful',
+        );
+      } else {
+        return AuthResult(
+          success: false,
+          user: null,
+          message: response.data['error'] ?? 'Registration failed',
+        );
+      }
+    } catch (e) {
+      if (e is DioException) {
+        String errorMessage = 'Registration failed';
+        if (e.response != null) {
+          final statusCode = e.response?.statusCode;
+          final responseData = e.response?.data;
+          if (responseData is Map<String, dynamic>) {
+            errorMessage = responseData['error'] ?? responseData['message'] ?? 'Registration failed';
+          } else {
+            errorMessage = 'Server error (${statusCode})';
+          }
+        } else if (e.type == DioExceptionType.connectionTimeout) {
+          errorMessage = 'Connection timeout - check your internet';
+        } else if (e.type == DioExceptionType.receiveTimeout) {
+          errorMessage = 'Server response timeout';
+        } else if (e.type == DioExceptionType.connectionError) {
+          errorMessage = 'Cannot connect to server - make sure backend is running';
+        } else {
+          errorMessage = 'Network error: ${e.message}';
+        }
+        return AuthResult(
+          success: false,
+          user: null,
+          message: errorMessage,
+        );
+      }
+      return AuthResult(
+        success: false,
+        user: null,
+        message: 'Unexpected error: ${e.toString()}',
+      );
+    }
   }
 
-  /// Send forgot password OTP
+  /// Send forgot password OTP (Mock for now)
   Future<AuthResult> forgotPassword(ForgotPasswordModel forgotData) async {
     await Future.delayed(const Duration(seconds: 1));
     
@@ -79,6 +206,9 @@ class AuthRepository {
     await Future.delayed(const Duration(milliseconds: 500));
     
     _isLoggedIn = false;
+    _currentUser = null;
+    _authToken = null;
+    
     return AuthResult(
       success: true,
       user: null,
@@ -86,12 +216,17 @@ class AuthRepository {
     );
   }
 
+  /// Get auth token
+  String? getAuthToken() {
+    return _authToken;
+  }
+
   /// Check if user is logged in
   bool isLoggedIn() {
     return _isLoggedIn;
   }
 
-  /// Verify OTP code
+  /// Verify OTP code (Mock for now)
   Future<AuthResult> verifyOTP(String phoneNumber, String otpCode) async {
     await Future.delayed(const Duration(seconds: 1));
     
@@ -114,16 +249,15 @@ class AuthRepository {
   /// Get current user profile
   Future<UserModel?> getCurrentUser() async {
     await Future.delayed(const Duration(milliseconds: 300));
-    return _isLoggedIn ? _mockUser : null;
+    return _currentUser;
   }
 
   /// Get current user synchronously for BLoC
   UserModel? getCurrentUserSync() {
-    return _isLoggedIn ? _mockUser : null;
+    return _currentUser;
   }
 }
 
-/// Result class for authentication operations
 class AuthResult {
   final bool success;
   final UserModel? user;

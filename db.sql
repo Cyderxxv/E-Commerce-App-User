@@ -170,6 +170,97 @@ INSERT INTO categories (name, icon) VALUES
 ('Headphones', 'headphone'),
 ('Accessories', 'accessory');
 
+-- Insert sample data
+
+-- Sample users
+INSERT INTO users (name, email, phone_number, password_hash, photo, full_name, date_of_birth, address, gender) VALUES 
+('Test User', 'test@example.com', '+84987654321', '123456', 'https://i.pravatar.cc/150?img=1', 'Test User Demo', '1990-01-01', 'Ho Chi Minh City, Vietnam', 'Male'),
+('John Doe', 'john@email.com', '+1234567890', '$2a$10$hashedpassword1', 'https://avatar.com/john.jpg', 'John Michael Doe', '1990-05-15', '123 Main St, City, State', 'Male'),
+('Jane Smith', 'jane@email.com', '+1234567891', '$2a$10$hashedpassword2', 'https://avatar.com/jane.jpg', 'Jane Elizabeth Smith', '1988-12-20', '456 Oak Ave, City, State', 'Female'),
+('Bob Wilson', 'bob@email.com', '+1234567892', '$2a$10$hashedpassword3', 'https://avatar.com/bob.jpg', 'Robert James Wilson', '1995-03-10', '789 Pine Rd, City, State', 'Male');
+
+-- Sample products
+INSERT INTO products (name, description, price, stock, image_url, rating, review_count, brand, is_featured, is_available) VALUES 
+('Samsung Galaxy S25 Edge (12/256GB)', 'Samsung flagship with curved-edge design and powerful performance. Display: 6.8" Dynamic AMOLED 2X, QHD+, 144Hz. CPU: Snapdragon 8 Elite for Galaxy. RAM: 12GB. Storage: 256GB UFS 4.0', 25650600, 50, 'https://cdn.viettablet.com/images/detailed/66/samsung-galaxy-s25-edge-111.jpg', 4.9, 256, 'Samsung', TRUE, TRUE),
+('Xiaomi 15S PRO (12/256GB)', 'Affordable powerhouse with premium features', 14550200, 30, 'https://cdn.mobilecity.vn/mobilecity-vn/images/2025/05/w300/xiaomi-15s-pro-den-cac-bon.jpg.webp', 4.8, 128, 'Xiaomi', TRUE, TRUE),
+('Apple iPhone 16 Pro Max (12/256GB)', 'Apple latest flagship with advanced camera', 32990000, 20, 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-2.png', 4.7, 300, 'Apple', TRUE, TRUE),
+('Samsung Galaxy Z Flip6 (12/256GB)', 'Foldable innovation for the modern user', 20550200, 25, 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung-galaxy-z-flip-6-xanh-duong-4_2.png', 4.0, 52, 'Samsung', FALSE, TRUE),
+('Samsung Galaxy Z Fold6 (12/256GB)', 'Tablet and phone in one foldable device', 30550200, 40, 'https://thetekcoffee.com/wp-content/uploads/2024/07/galaxy-z-fold6-han-quoc.png', 4.5, 72, 'Samsung', FALSE, TRUE),
+('Apple MacBook Air M4 13-inch (16/512GB)', 'Sleek and powerful laptop with Apple M4 chip. Display: 13.6" Liquid Retina, 2560x1664. CPU: Apple M4 10-core. RAM: 16GB. Ports: 2x Thunderbolt 4, MagSafe 3', 29990000, 60, 'https://bizweb.dktcdn.net/100/453/356/products/mbair-13inch-m4-midnight-1744562440665.jpg?v=1747827209317', 4.8, 180, 'Apple', TRUE, TRUE),
+('Asus Zenbook S 14 (16/1TB)', 'Premium ultrabook with stunning OLED display. Display: 14" 3K OLED, 120Hz. CPU: Intel Core Ultra 7 155H. RAM: 16GB LPDDR5X', 35990000, 80, 'https://sazo.vn/storage/products/zenbook-s14/4.png', 4.7, 95, 'Asus', FALSE, TRUE),
+('Apple Watch Series 10 (46mm)', 'Advanced smartwatch with comprehensive health tracking. Display: 46mm OLED Retina, Always-On. Processor: S10 SiP. Features: ECG, Blood Oxygen, Sleep Tracking', 9990000, 35, 'https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MXM23ref_FV99_VW_34FR+watch-case-46-aluminum-jetblack-nc-s10_VW_34FR+watch-face-46-aluminum-jetblack-s10_VW_34FR?wid=752&hei=720&bgc=fafafa&trim=1&fmt=p-jpg&qlt=80&.v=TnVrdDZWRlZzTURKbHFqOGh0dGpVRW5TeWJ6QW43NUFnQ2V4cmRFc1VnYUdWejZ5THhpKzJwRmRDYlhxN2o5aXB2QjR6TEZ4ZThxM3VqYkZobmlXM3RGNnlaeXQ4NGFKQTAzc0NGeHR2aVk0VEhOZEFKYmY1ZHNpalQ3YVhOWk9WV', 4.8, 250, 'Apple', TRUE, TRUE);
+
+-- Link products to categories
+INSERT INTO product_categories (product_id, category_id) VALUES 
+(1, 1), -- Samsung Galaxy S25 -> Phones
+(2, 1), -- Xiaomi 15S PRO -> Phones
+(3, 1), -- iPhone 16 Pro Max -> Phones
+(4, 1), -- Galaxy Z Flip6 -> Phones
+(5, 1), -- Galaxy Z Fold6 -> Phones
+(6, 2), -- MacBook Air -> Laptops
+(7, 2), -- Asus Zenbook -> Laptops
+(8, 4); -- Apple Watch -> Smart Watches
+
+-- Sample admin
+INSERT INTO admins (username, password_hash) VALUES 
+('admin', '$2a$10$hashedadminpassword');
+
+-- Sample cart items
+INSERT INTO carts (user_id, product_id, quantity) VALUES 
+(1, 1, 1), -- Test User has Samsung Galaxy S25 in cart
+(1, 6, 1), -- Test User has MacBook in cart
+(2, 2, 2), -- John has 2 Xiaomi 15S in cart
+(3, 8, 1); -- Bob has Apple Watch in cart
+
+-- Sample orders
+INSERT INTO orders (user_id, total_amount, status, payment_method_id, is_installment, shipping_address) VALUES 
+(1, 25650600, 'DELIVERED', 1, FALSE, 'Ho Chi Minh City, Vietnam'),
+(2, 29990000, 'PROCESSING', 2, TRUE, '123 Main St, City, State'),
+(3, 9990000, 'SHIPPED', 3, FALSE, '789 Pine Rd, City, State');
+
+-- Sample order items
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES 
+(1, 1, 1, 25650600),
+(2, 6, 1, 29990000),
+(3, 8, 1, 9990000);
+
+-- Sample transactions
+INSERT INTO transactions (user_id, order_id, amount) VALUES 
+(1, 1, 25650600),
+(2, 2, 5998000), -- Initial installment payment
+(3, 3, 9990000);
+
+-- Sample installment plan
+INSERT INTO installment_plans (order_id, user_id, total_amount, total_months, monthly_payment, paid_months, paid_amount) VALUES 
+(2, 2, 29990000, 12, 2499167, 2, 4998334);
+
+-- Sample installment payments
+INSERT INTO installment_payments (installment_plan_id, month_number, due_date, amount, paid_date, status) VALUES 
+(1, 1, '2024-02-01', 2499167, '2024-02-01 10:30:00', 'PAID'),
+(1, 2, '2024-03-01', 2499167, '2024-03-01 14:15:00', 'PAID'),
+(1, 3, '2024-04-01', 2499167, NULL, 'PENDING'),
+(1, 4, '2024-05-01', 2499167, NULL, 'PENDING');
+
+-- Sample wishlists
+INSERT INTO wishlists (user_id, product_id) VALUES 
+(1, 6), -- John wants MacBook
+(1, 3), -- John wants iPhone 16 Pro Max
+(2, 1), -- Jane wants Samsung Galaxy S25
+(3, 5); -- Bob wants Galaxy Z Fold
+
+-- Sample reviews
+INSERT INTO reviews (user_id, product_id, rating, comment) VALUES 
+(1, 1, 5.0, 'Amazing phone! The display quality is outstanding and performance is smooth.'),
+(1, 7, 4.5, 'Great laptop for productivity, but could be better for gaming.'),
+(3, 4, 4.0, 'Good foldable phone, battery life could be improved.');
+
+-- Sample notifications
+INSERT INTO notifications (user_id, title, message, type, is_read) VALUES 
+(1, 'Order Delivered', 'Your Samsung Galaxy S25 Edge has been delivered successfully.', 'ORDER', TRUE),
+(2, 'Payment Due', 'Your MacBook installment payment is due in 3 days.', 'PAYMENT', FALSE),
+(3, 'Order Shipped', 'Your Galaxy Z Flip6 is on the way!', 'ORDER', FALSE),
+(1, 'Special Offer', 'Get 20% off on all Samsung products this week!', 'PROMOTION', FALSE);
+
 -- Create indexes for better performance
 CREATE INDEX idx_wishlists_user_id ON wishlists(user_id);
 CREATE INDEX idx_wishlists_product_id ON wishlists(product_id);
