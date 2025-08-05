@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/utils/price_formatter.dart';
 import '../../../core/widgets/loading_circle.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
@@ -174,7 +175,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                                           child: ProductDetailPage(
                                             imageUrl: p.imageUrl,
                                             name: p.name,
-                                            price: p.price.toStringAsFixed(0),
+                                            price: PriceFormatter.formatPrice(p.price),
                                             description: p.description,
                                             rating: p.rating,
                                             ratingCount: p.reviewCount,
@@ -187,7 +188,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                                   child: ProductCardItem(
                                     imageUrl: p.imageUrl,
                                     name: p.name,
-                                    price: p.price.toStringAsFixed(0),
+                                    price: PriceFormatter.formatPrice(p.price),
                                     rating: p.rating,
                                     reviews: p.reviewCount,
                                   ),
@@ -264,6 +265,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                                     MaterialPageRoute(
                                       builder: (context) => CategoryProductsPage(
                                         categoryName: c.label ?? c.name,
+                                        categoryId: c.id.toString(),
                                       ),
                                     ),
                                   );

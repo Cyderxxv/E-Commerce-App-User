@@ -6,6 +6,7 @@ import 'features/profile/pages/profile_wrapper.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/auth/bloc/auth_event.dart';
 import 'features/auth/bloc/auth_state.dart';
+import 'features/auth/domain/auth_repo.dart';
 import 'core/widgets/bottom_nav_bar.dart';
 
 class MainScreen extends StatefulWidget {

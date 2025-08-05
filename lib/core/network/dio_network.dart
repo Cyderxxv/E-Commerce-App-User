@@ -24,11 +24,16 @@ class DioNetwork {
           receiveTimeout: const Duration(seconds: 300),
           responseType: ResponseType.json,
         );
+    
+    // Note: Authorization header is now handled by RequestNetwork interceptor
+    // This ensures consistent token handling across all requests
     if (isAuth == true) {
-      _options.headers['Authorization'] = 'Bearer ${StoreData.instant.token}';
+      final token = StoreData.instant.token;
+      print('🔑 DioNetwork: isAuth=true, token=${token.isEmpty ? "EMPTY" : "EXISTS(${token.length} chars)"}');
     } else {
-      _options.headers.remove('Authorization');
+      print('🔑 DioNetwork: isAuth=false');
     }
+    
     _options.headers.remove(Headers.contentLengthHeader);
     dio = Dio(_options);
     // ignore: deprecated_member_use

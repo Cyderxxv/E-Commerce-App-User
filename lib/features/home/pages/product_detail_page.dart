@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/domain/product.dart';
+import '../../../core/utils/price_formatter.dart';
 import '../../cart/bloc/cart_bloc.dart';
 import '../../cart/bloc/cart_event.dart';
-import '../../cart/bloc/cart_state.dart';
 
 class ProductDetailPage extends StatelessWidget {
   final String imageUrl;
@@ -69,7 +69,9 @@ class ProductDetailPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  '₫$price',
+                  product != null 
+                    ? PriceFormatter.formatPriceWithCurrency(product!.price)
+                    : '${price}₫',
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 26, color: Colors.black),
                 ),
                 const SizedBox(height: 6),

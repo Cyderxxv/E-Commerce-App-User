@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/utils/price_formatter.dart';
 import '../../../core/widgets/loading_circle.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
@@ -9,10 +10,12 @@ import '../../cart/bloc/cart_bloc.dart';
 
 class CategoryProductsPage extends StatelessWidget {
   final String categoryName;
+  final String? categoryId;
   
   const CategoryProductsPage({
     Key? key,
     required this.categoryName,
+    this.categoryId,
   }) : super(key: key);
 
   @override
@@ -80,13 +83,33 @@ class CategoryProductsPage extends StatelessWidget {
                 ),
               );
             } else if (state is HomeLoaded) {
-              // Filter products by category - temporary logic until we pass categoryId
-              final filteredProducts = state.products
-                  .where((product) => 
-                      product.name.toLowerCase().contains(categoryName.toLowerCase()) ||
-                      product.description.toLowerCase().contains(categoryName.toLowerCase()) ||
-                      product.brand.toLowerCase().contains(categoryName.toLowerCase()))
-                  .toList();
+              print('🏠 HomeLoaded state received with ${state.products.length} products');
+              print('📂 Products: ${state.products.map((p) => p.name).toList()}');
+              
+              // Filter products by category - improved logic with fallback
+              List<dynamic> filteredProducts;
+              
+              if (categoryId != null && categoryId!.isNotEmpty) {
+                // Try categoryId filter first
+                filteredProducts = state.products
+                    .where((product) => product.categoryId.toString() == categoryId)
+                    .toList();
+                print('🔍 Using categoryId filter: $categoryId, found: ${filteredProducts.length}');
+                print('🔍 Products categoryIds: ${state.products.map((p) => '${p.name}: ${p.categoryId}').take(5).toList()}');
+                
+                // If no products found by categoryId, fallback to keyword filtering
+                if (filteredProducts.isEmpty) {
+                  filteredProducts = _filterProductsByCategory(state.products, categoryName);
+                  print('🔄 Fallback to keyword filter for: $categoryName, found: ${filteredProducts.length}');
+                }
+              } else {
+                // Use keyword-based filtering directly
+                filteredProducts = _filterProductsByCategory(state.products, categoryName);
+                print('🔍 Using keyword filter for: $categoryName, found: ${filteredProducts.length}');
+              }
+              
+              print('🔍 Filtering for category: $categoryName');
+              print('📦 Filtered products: ${filteredProducts.map((p) => p.name).toList()}');
 
               if (filteredProducts.isEmpty) {
                 return Center(
@@ -169,7 +192,7 @@ class CategoryProductsPage extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  '${filteredProducts.length} products available',
+                                  '${filteredProducts.length} products in $categoryName',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey[600],
@@ -213,6 +236,103 @@ class CategoryProductsPage extends StatelessWidget {
     );
   }
 
+  List<dynamic> _filterProductsByCategory(List<dynamic> products, String categoryName) {
+    final categoryLower = categoryName.toLowerCase();
+    
+    return products.where((product) {
+      final productName = product.name.toLowerCase();
+      final productDesc = product.description.toLowerCase();
+      final productBrand = product.brand.toLowerCase();
+      
+      // Add specific keywords for different categories
+      switch (categoryLower) {
+        case 'phones':
+          return productName.contains('phone') || 
+                 productName.contains('iphone') || 
+                 productName.contains('samsung galaxy') || 
+                 productName.contains('xiaomi') ||
+                 productName.contains('oneplus') ||
+                 productName.contains('galaxy') ||
+                 productName.contains('flip') ||
+                 productName.contains('fold') ||
+                 productDesc.contains('smartphone') ||
+                 productDesc.contains('mobile phone') ||
+                 productDesc.contains('flagship') ||
+                 productDesc.contains('foldable') ||
+                 (productBrand.contains('apple') && (productName.contains('iphone') || productDesc.contains('iphone'))) ||
+                 (productBrand.contains('samsung') && (productName.contains('galaxy') || productDesc.contains('phone'))) ||
+                 (productBrand.contains('xiaomi') && productDesc.contains('phone'));
+                 
+        case 'tablets':
+          return productName.contains('tablet') || 
+                 productName.contains('ipad') ||
+                 productName.contains('pad') ||
+                 productDesc.contains('tablet') ||
+                 (productBrand.contains('apple') && productName.contains('ipad')) ||
+                 (productBrand.contains('samsung') && productName.contains('tab')) ||
+                 (productBrand.contains('oneplus') && productName.contains('pad'));
+                 
+        case 'laptops':
+          return productName.contains('laptop') || 
+                 productName.contains('macbook') ||
+                 productName.contains('book') ||
+                 productName.contains('thinkpad') ||
+                 productName.contains('zenbook') ||
+                 productName.contains('xps') ||
+                 productName.contains('yoga') ||
+                 productName.contains('spectre') ||
+                 productDesc.contains('laptop') ||
+                 productDesc.contains('ultrabook') ||
+                 productDesc.contains('notebook') ||
+                 productDesc.contains('convertible') ||
+                 (productBrand.contains('apple') && productName.contains('macbook')) ||
+                 (productBrand.contains('dell') && productDesc.contains('laptop')) ||
+                 (productBrand.contains('hp') && productDesc.contains('laptop')) ||
+                 (productBrand.contains('asus') && productDesc.contains('laptop')) ||
+                 (productBrand.contains('lenovo') && productDesc.contains('laptop'));
+                 
+        case 'smart watches':
+        case 'watches':
+          return productName.contains('watch') || 
+                 productName.contains('apple watch') ||
+                 productName.contains('galaxy watch') ||
+                 productName.contains('fenix') ||
+                 productName.contains('fitbit') ||
+                 productDesc.contains('smartwatch') ||
+                 productDesc.contains('smart watch') ||
+                 productDesc.contains('fitness tracker') ||
+                 (productBrand.contains('apple') && productName.contains('watch')) ||
+                 (productBrand.contains('samsung') && productName.contains('watch')) ||
+                 (productBrand.contains('garmin')) ||
+                 (productBrand.contains('fitbit'));
+                 
+        case 'headphones':
+        case 'accessories':
+          return productName.contains('airpods') ||
+                 productName.contains('headphone') ||
+                 productName.contains('earphone') ||
+                 productName.contains('earbuds') ||
+                 productName.contains('case') || 
+                 productName.contains('charger') ||
+                 productName.contains('cable') ||
+                 productName.contains('kindle') ||
+                 productDesc.contains('earbuds') ||
+                 productDesc.contains('wireless earbuds') ||
+                 productDesc.contains('accessory') ||
+                 productDesc.contains('accessories') ||
+                 productDesc.contains('e-reader') ||
+                 (productBrand.contains('apple') && productName.contains('airpods')) ||
+                 (productBrand.contains('amazon') && productName.contains('kindle'));
+                 
+        default:
+          // Default filter for other categories
+          return productName.contains(categoryLower) ||
+                 productDesc.contains(categoryLower) ||
+                 productBrand.contains(categoryLower);
+      }
+    }).toList();
+  }
+
   IconData _getCategoryIcon(String categoryName) {
     switch (categoryName.toLowerCase()) {
       case 'phones':
@@ -244,7 +364,7 @@ class CategoryProductsPage extends StatelessWidget {
               child: ProductDetailPage(
                 imageUrl: product.imageUrl,
                 name: product.name,
-                price: product.price.toStringAsFixed(0),
+                price: PriceFormatter.formatPrice(product.price),
                 description: product.description,
                 rating: product.rating,
                 ratingCount: product.reviewCount,
@@ -328,7 +448,7 @@ class CategoryProductsPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '₫${product.price.toStringAsFixed(0)}',
+                          PriceFormatter.formatPriceWithCurrency(product.price),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,

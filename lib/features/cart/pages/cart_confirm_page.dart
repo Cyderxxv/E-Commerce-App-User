@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/utils/price_formatter.dart';
 import '../bloc/cart_bloc.dart';
 import '../bloc/cart_state.dart';
 import '../models/cart_item.dart';
@@ -88,7 +89,7 @@ class _CartConfirmPageState extends State<CartConfirmPage> {
                     const SizedBox(height: 8),
                     _shippingOptionTile(0, 'Standard', '5-7 days', 'FREE'),
                     const SizedBox(height: 8),
-                    _shippingOptionTile(1, 'Express', '1-2 days', '₫30.000'),
+                    _shippingOptionTile(1, 'Express', '1-2 days', PriceFormatter.formatPriceWithCurrency(30000)),
                     const SizedBox(height: 4),
                     Text('Delivered on or before Friday, June 13th 2025', style: TextStyle(color: Colors.grey[600], fontSize: 13)),
                     const SizedBox(height: 18),
@@ -119,7 +120,7 @@ class _CartConfirmPageState extends State<CartConfirmPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text('Total', style: TextStyle(fontSize: 16, color: Colors.grey)),
-                            Text('₫${_formatPrice(totalWithShipping)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
+                            Text(PriceFormatter.formatPriceWithCurrency(totalWithShipping), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
                           ],
                         ),
                         ElevatedButton(
@@ -217,7 +218,7 @@ class _CartConfirmPageState extends State<CartConfirmPage> {
             ),
           ),
           const SizedBox(width: 8),
-          Text('₫${item.product.price.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          Text(PriceFormatter.formatPriceWithCurrency(item.product.price), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
         ],
       ),
     );
@@ -269,15 +270,5 @@ class _CartConfirmPageState extends State<CartConfirmPage> {
         child: Text(label, style: TextStyle(fontWeight: FontWeight.bold, color: isSelected ? Colors.white : Colors.black)),
       ),
     );
-  }
-
-  String _formatPrice(double price) {
-    final s = price.toStringAsFixed(0);
-    final buffer = StringBuffer();
-    for (int i = 0; i < s.length; i++) {
-      if (i != 0 && (s.length - i) % 3 == 0) buffer.write('.');
-      buffer.write(s[i]);
-    }
-    return buffer.toString();
   }
 }

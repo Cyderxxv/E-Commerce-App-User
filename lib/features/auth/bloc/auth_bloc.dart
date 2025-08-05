@@ -28,7 +28,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onCheckAuth(CheckAuthEvent event, Emitter<AuthState> emit) async {
     try {
       // Check if user is already logged in using instance method
-      final isLoggedIn = _authRepository.isLoggedIn();
+      final isLoggedIn = _authRepository.isLoggedIn();      
       if (isLoggedIn) {
         // Get current user using instance method
         final user = _authRepository.getCurrentUserSync();
@@ -41,8 +41,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthUnauthenticated());
       }
     } catch (e) {
-      // Handle any errors during auth check
-      print('❌ Error checking auth status: $e');
       emit(AuthUnauthenticated());
     }
   }

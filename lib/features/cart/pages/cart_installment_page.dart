@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/utils/price_formatter.dart';
 
 class CartInstallmentPage extends StatefulWidget {
   final double totalAmount;
@@ -15,7 +16,6 @@ class _CartInstallmentPageState extends State<CartInstallmentPage> {
 
   @override
   Widget build(BuildContext context) {
-    double monthlyPayment = widget.totalAmount / _selectedMonths;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Installment Options', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
@@ -31,7 +31,7 @@ class _CartInstallmentPageState extends State<CartInstallmentPage> {
           children: [
             const Text('Total Order Amount', style: TextStyle(fontSize: 16, color: Colors.grey)),
             const SizedBox(height: 4),
-            Text('₫${_formatCurrency(widget.totalAmount)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
+            Text(PriceFormatter.formatPriceWithCurrency(widget.totalAmount), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
             const SizedBox(height: 24),
             const Text('Choose Installment Term', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
@@ -66,10 +66,6 @@ class _CartInstallmentPageState extends State<CartInstallmentPage> {
     );
   }
 
-  String _formatCurrency(num value) {
-    return value.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.');
-  }
-
   Widget _buildTermCard(int term) {
     final isSelected = _selectedMonths == term;
     final interest = _interestRates[term] ?? 0.0;
@@ -97,7 +93,7 @@ class _CartInstallmentPageState extends State<CartInstallmentPage> {
               children: [
                 Text('$term months', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: isSelected ? Colors.white : Colors.black)),
                 const SizedBox(height: 6),
-                Text('₫${_formatCurrency(monthly)}/month', style: TextStyle(fontSize: 14, color: isSelected ? Colors.white : Colors.black)),
+                Text(PriceFormatter.formatInstallmentPrice(monthly, term), style: TextStyle(fontSize: 14, color: isSelected ? Colors.white : Colors.black)),
                 const SizedBox(height: 6),
                 Text('${(interest * 100).toStringAsFixed(0)}% interest', style: TextStyle(fontSize: 13, color: isSelected ? Colors.white : Colors.grey[700])),
               ],

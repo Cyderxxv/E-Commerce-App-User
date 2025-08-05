@@ -92,7 +92,7 @@ class ProductCardItem extends StatelessWidget {
               height: 22,
               alignment: Alignment.centerLeft,
               child: Text(
-                '₫$price',
+                '$price₫',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold, 
                   fontSize: 18, 

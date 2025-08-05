@@ -1,6 +1,7 @@
 import 'package:cyder_store/features/cart/pages/cart_confirm_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/utils/price_formatter.dart';
 import '../bloc/cart_bloc.dart';
 import '../bloc/cart_state.dart';
 import '../bloc/cart_event.dart';
@@ -133,7 +134,7 @@ class CartPage extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '₫${product.price.toStringAsFixed(0)}',
+                                PriceFormatter.formatPriceWithCurrency(product.price),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,

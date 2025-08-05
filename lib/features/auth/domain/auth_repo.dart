@@ -5,14 +5,75 @@ import '../models/input_register_model.dart';
 import '../models/input_forgot_password_model.dart';
 import 'package:dio/dio.dart';
 import '../../../core/network/dio_network.dart';
+import '../../../core/store/store.dart';
 
 class AuthRepository {
   AuthRepository._();
   static final AuthRepository _instance = AuthRepository._();
   static AuthRepository get instance => _instance;
-  static bool _isLoggedIn = false;
-  static UserModel? _currentUser;
-  static String? _authToken;
+  
+  bool _isLoggedIn = false;
+  UserModel? _currentUser;
+  String? _authToken;
+
+  /// Initialize auth state from stored token
+  Future<void> initializeAuthState() async {
+    try {
+      final storedToken = StoreData.instant.token;
+      if (storedToken.isNotEmpty) {
+        _authToken = storedToken;
+        _isLoggedIn = true;
+        
+        // Try to fetch user data if possible
+        await _tryFetchUserData(storedToken);
+      } else {
+        _isLoggedIn = false;
+        _currentUser = null;
+        _authToken = null;
+      }
+    } catch (e) {
+      _isLoggedIn = false;
+      _currentUser = null;
+      _authToken = null;
+    }
+  }
+
+  /// Try to fetch user data with stored token
+  Future<void> _tryFetchUserData(String token) async {
+    try {
+      DioNetwork.instant.init(AppConstants.baseUrl);
+      
+      final response = await DioNetwork.instant.dio.get(
+        '/auth/me', // Try to get current user data
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Accept': 'application/json',
+          },
+        ),
+      );
+      
+      if (response.statusCode == 200) {
+        final userData = response.data['data'];
+        if (userData != null) {
+          _currentUser = UserModel(
+            userId: userData['id'].toString(),
+            fullname: userData['name'] ?? '',
+            phoneNumber: userData['phone_number'] ?? '',
+            email: userData['email'] ?? '',
+            address: userData['address'] ?? '',
+            dateOfBirth: userData['date_of_birth'] ?? '',
+            avatarUrl: userData['photo'] ?? 'photo',
+            gender: userData['gender'] ?? '',
+            status: userData['status'] ?? 'Active',
+            createdAt: DateTime.tryParse(userData['created_at'] ?? '') ?? DateTime.now(),
+          );
+        }
+      }
+    } catch (e) {
+      
+    }
+  }
 
   /// Login with email and password (API integration)
   Future<AuthResult> login(InputLoginModel loginData) async {
@@ -50,7 +111,7 @@ class AuthRepository {
         
         _authToken = token;
         _isLoggedIn = true;
-        
+        await StoreData.instant.setToken(token);      
         return AuthResult(
           success: true,
           user: _currentUser,
@@ -75,7 +136,7 @@ class AuthRepository {
           } else if (responseData is Map<String, dynamic>) {
             errorMessage = responseData['error'] ?? responseData['message'] ?? 'Login failed';
           } else {
-            errorMessage = 'Server error (${statusCode})';
+            errorMessage = 'Server error ($statusCode)';
           }
         } else if (e.type == DioExceptionType.connectionTimeout) {
           errorMessage = 'Connection timeout - check your internet';
@@ -138,11 +199,7 @@ class AuthRepository {
           status: userData['status'] ?? 'Active',
           createdAt: DateTime.tryParse(userData['created_at'] ?? '') ?? DateTime.now(),
         );
-        
-        _currentUser = newUser;
-        _authToken = token;
-        _isLoggedIn = true;
-        
+        await StoreData.instant.setToken(token);
         return AuthResult(
           success: true,
           user: newUser,
@@ -208,6 +265,9 @@ class AuthRepository {
     _isLoggedIn = false;
     _currentUser = null;
     _authToken = null;
+    
+    // Clear token from StoreData
+    await StoreData.instant.removeAllCache();
     
     return AuthResult(
       success: true,
